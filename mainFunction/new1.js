@@ -302,41 +302,7 @@ function audioDone() {
     $('#done').show(); // Show the "done" element after all texts are recorded
 }
 
-// function toggleRecording( e ) {
-//     if( !window.audioInit ) initAudio();
-//     console.log( 'audioRecorder', audioRecorder )
-    
-//     if( !audioRecorder )
-//     {
-//         return setTimeout( function(){ toggleRecording(e)}, 100 );
-//     }
-//     $("#alert").hide()
-//     console.log( 'tEXT', $('#record').text() );
-//     if ($('#record').text().match(/Stop/)) {
-//         // stop recording
-//         console.log( 'stop' )
-//         audioRecorder.stop();
-//         $('#record').removeClass("btn-danger");
-//         $('#record').text('Record Again');
-//         $('#save').show();
-//         $('#analyser').hide();
-//         $('#wavedisplay').show();
-//         audioRecorder.getBuffers( gotBuffers );
-//     } else {
-//         // start recording
-//         if (!audioRecorder)
-//             return;
-//         console.log( 'record')
-//         $('#save').hide();
-//         $('#analyser').show();
-//         $('#wavedisplay').hide();
-//         $('.audio').remove();
-//         $('#record').addClass("btn-danger");
-//         $('#record').text('Stop Recording');
-//         audioRecorder.clear();
-//         audioRecorder.record();
-//     }
-// }
+
 function toggleRecording(e) {
     if (!window.audioInit) initAudio();
     console.log('audioRecorder', audioRecorder);
