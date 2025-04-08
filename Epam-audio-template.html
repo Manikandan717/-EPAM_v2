@@ -1,0 +1,454 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Audio Recorder</title>
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="mainFunction/audiodisplay.js"></script>
+	<script src="mainFunction/recorderjs/recorder.js"></script>
+	<script src="mainFunction/new1.js"></script>
+	<style>
+	canvas {
+		display: inline-block;
+		background: #cccccc;
+		width: 100%;
+		height: 100px;
+	}
+	#controls {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		height: 20%;
+		width: 100%;
+	}
+	.audio {
+		width: 100%;
+	}
+	.hidden {
+		display: none;
+	}
+
+	#title
+	{
+		font-size: 14px;
+		color: #777;
+	}
+
+	#texttorec
+	{
+		border: 1px solid #cccccc;
+		padding: 20px;
+		font-size: 26px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border-radius: 5px;
+	}
+    #save{
+        float: right
+    }
+    #alert{
+        border-color: #d38e8e;
+        background-color: #fff0f2;
+        line-height: 1.6;
+    }
+	#done
+	{
+		font-size: 30px;
+		line-height: 150px;
+		text-align: center;
+		color: #444;
+	}
+    #timer {
+		font-size: 20px;
+		color: #333;
+		margin-top: 10px;
+		text-align: center;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="mymodal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Modal body text goes here.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<main role="main">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-3 ctrlpanel hhidden-xs vh-100 overflow-auto pe-2 pb-2">
+				Please complete your info:
+				<form>
+                    <div class="form-group">
+						<label for="userId">Speaker Id</label>
+						<input type="text" class="form-control" id="userId" aria-describedby="Enter your speaker id" placeholder="Enter your speaker id">
+					</div>
+					<div class="form-group">
+						<label for="userName">Name</label>
+						<input type="text" class="form-control" id="userName" aria-describedby="Enter your name" placeholder="Enter your name">
+					</div>
+					<div class="form-group">
+						<label for="userGender">Gender</label>
+						<select class="form-control" id="userGender">
+							<option></option>
+							<option>Male</option>
+							<option>Female</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="userAge">Age</label>
+						<input type="number" class="form-control" id="userAge" aria-describedby="Enter your age" placeholder="Enter your age">
+					</div>
+					<!-- <div class="form-group">
+						<label for="userCountry">Country </label>
+						<select class="form-control" id="userCountry" onchange="updateText()">
+							<option>United States</option>
+							<option>United Kingdom</option>
+						</select>
+					</div> -->
+					<div class="form-group">
+						<label for="proficiencyLevel">Proficiency Level</label>
+						<select class="form-control" id="proficiencyLevel">
+							<option disabled selected value="">Select your proficiency level</option>
+							<option value="A1">A1 – Beginner</option>
+							<option value="A2">A2 – Elementary</option>
+							<option value="B1">B1 – Intermediate</option>
+							<option value="B2">B2 – Upper Intermediate</option>
+							<option value="C1">C1 – Advanced</option>
+							<option value="C2">C2 – Mastery (Proficient)</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="nativeLanguage">Native Language</label>
+						<input type="text" class="form-control" id="nativeLanguage" placeholder="Enter your native language">
+					</div>
+					<div class="form-group">
+						<label for="userCountry">Country</label>
+						<select class="form-control" id="userCountry" onchange="updateText()">
+							<option value="">Select a country</option>
+							<option value="en-US">en-US</option>
+							<option value="en-UK">en-UK</option>
+							<option value="ru-RU">ru-RU</option>
+							<option value="hr-HR">hr-HR</option>
+							<option value="sk-CZ">sk-CZ</option>
+							<option value="sr-XK">sr-XK</option>
+							<option value="sq-AL">sq-AL</option>
+							<option value="cs-CZ">cs-CZ</option>
+							<option value="sq-XK">sq-XK</option>
+							<option value="hu-HU">hu-HU</option>
+							<option value="uk-UA">uk-UA</option>
+							<option value="sk-SK">sk-SK</option>
+							<option value="hr-BA">hr-BA</option>
+							<option value="de-AT">de-AT</option>
+							<option value="de-DE">de-DE</option>
+							<option value="ro-RO">ro-RO</option>
+							<option value="sr-RS">sr-RS</option>
+							<option value="sr-BA">sr-BA</option>
+							<option value="sl-SI">sl-SI</option>
+							<option value="sq-ME">sq-ME</option>
+							<option value="bs-BA">bs-BA</option>
+							<option value="bs-ME">bs-ME</option>
+							<option value="pl-PL">pl-PL</option>
+						</select>
+					</div>
+				</form>
+                <button id="clearAllData" class="btn btn-danger">Reset</button>
+				</div>
+				<div class="col-8 imgdisplay">
+					<div id="title"></div>
+					<div id="subtitle"></div>
+					<div id="texttorec">kindly select country first</div>
+					<div id="done" class="hidden">Thank you!</div>
+					<canvas id="analyser" class="hidden"></canvas>
+					<canvas id="wavedisplay" class="hidden"></canvas>
+					<div id="media"></div>
+                    <div id="timer" class="hidden">00:00</div>
+                    <audio id="audioPlayback" controls class="hidden"></audio>
+					<button id="record" type="button" class="btn btn-primary" onclick="toggleRecording(this);">Start Recording</button>
+					<button id="save" type="button" class="btn btn-info hidden" onclick="sendAudio()">Send Audio</button>
+                    <br>
+                    <br>  
+                    <div class="alert mt-3 p-3 position-relative" role="alert" id="alert">
+                        <div class="d-flex align-items-start">
+                          <div>
+                            <h6 class="fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="red" stroke="red" stroke-width="0.5" class="bi bi-exclamation-triangle me-2 mb-2 " viewBox="0 0 16 16">
+                                    <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                                    <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                                  </svg>
+                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                              </svg>Important
+                            </h6>
+                            <p class="mb-0 px-3" id="alert">
+								<b class="text-danger px-1">Mandatory Notice:</b> Record one sentence/question at a time, ensuring each is its own separate clip.<br>
+                                Pause briefly before and after reading each sentence/question to allow for clean editing.<br>
+                                <b class="text-danger px-1">No Repetition Within a Sentence:</b>
+                                <ul>
+                                    <li>If you make a mistake, stop and re-record the entire sentence/question.</li>
+                                    <li>Do not try to restart the sentence halfway through.Tone and Clarity:</li>
+                                    <li>Speak clearly and confidently, enunciating your words without over-exaggerating.</li>
+                                    <li>Avoid mumbling, whispering, or speaking too loudly.</li>
+                            </ul>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+				
+			</div>
+		</div>
+	</main>
+</body>
+<script>
+
+// var texts = [
+// {id:16, text: "Others have tried to explain the phenomenon physically. "},
+// {id:17, text: "Aristotle thought that the rainbow was caused by reflection of the sun's rays by the rain. "},
+// {id:18, text: "Aristotle thought that the rainbow was caused by reflection of the sun's rays by the rain. "},
+// {id:19, text: "Since then physicists have found that it is not reflection, but refraction by the raindrops which causes the rainbows. "},
+// ];
+var countryTexts = {
+ "en-US": [     
+	  { id: "e9379ecf2b22416bd3c34adb358ce1f1", text: "How do I change my account's nickname?" },
+      { id: "cc7c9077ff6302dc84cde37da9de6c27", text: "Can I set notifications for large transactions?" },
+      { id: "398e460415f5cbcd03d92e60221ee0c8", text: "Can I order a new checkbook?" },
+      { id: "a330c53efd65de26cc8fd752c84167d1", text: "Can I see login attempts?" },
+      { id: "f2adf8de7e5b7aa40c5b91c39c3c6487", text: "How do I enroll in paperless statements?" }
+	],
+
+ "en-UK": [           
+	  { id: "3eaf3f377cf638dcb8592b8619b735bf", text: "How do I change my account's nickname?" },
+      { id: "5bf8d8cc3d6ef99edde8448f27f14cb9", text: "How do I enroll in paperless statements?" },
+      { id: "0a9a0b4f6854cc1311e76daff1ba9c5b", text: "Can I set notifications for large transactions?" },
+      { id: "b95a909915a2ab8b6dbe20889781b6ee", text: "Can I see login attempts?" },
+      { id: "1f67deb97b49f0e72057fb6221b6e266", text: "Can I withdraw from my fixed deposit early?" }
+			],
+ "ru-RU": [
+	  { id: "0eb353cca7d9de7ba50f90390297a0c6", text: "\u0427\u0442\u043e \u0434\u0435\u043b\u0430\u0442\u044c, \u0435\u0441\u043b\u0438 \u044f \u043f\u043e\u0434\u043e\u0437\u0440\u0435\u0432\u0430\u044e \u043c\u043e\u0448\u0435\u043d\u043d\u0438\u0447\u0435\u0441\u0442\u0432\u043e?" },
+	  { id: "822333e7d4037a9c02394102f39271fc", text: "\u041a\u0430\u043a \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u043f\u043e\u0432\u0442\u043e\u0440\u044f\u044e\u0449\u0438\u0439\u0441\u044f \u043f\u043b\u0430\u0442\u0435\u0436?" },
+	  { id: "14321e2751387e96ffaca2a20498bdd5", text: "\u041c\u043e\u0436\u0435\u0442\u0435 \u043b\u0438 \u0432\u044b \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u0441\u043f\u043e\u0441\u043e\u0431\u044b \u0441\u044d\u043a\u043e\u043d\u043e\u043c\u0438\u0442\u044c \u0431\u043e\u043b\u044c\u0448\u0435 \u0434\u0435\u043d\u0435\u0433?" },
+	  { id: "6d72056a30eab8d275279b51e18ed3cb", text: "\u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u0442\u0435 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043f\u0435\u0440\u0435\u0432\u043e\u0434 \u0432 \u0440\u0430\u0437\u043c\u0435\u0440\u0435 1001 \u0440\u0443\u0431\u043b\u044c \u043d\u0430 \u043c\u043e\u0439 \u0441\u0447\u0451\u0442 \u043d\u0430 \u0422\u0432\u0435\u0440\u0441\u043a\u043e\u0439 \u0443\u043b\u0438\u0446\u0435, \u0434\u043e\u043c 7. \u041f\u0435\u0440\u0435\u0432\u043e\u0434 \u0434\u043e\u043b\u0436\u0435\u043d \u043e\u0441\u0443\u0449\u0435\u0441\u0442\u0432\u043b\u044f\u0442\u044c\u0441\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u043f\u0435\u0440\u0432\u043e\u0433\u043e \u0447\u0438\u0441\u043b\u0430 \u043c\u0435\u0441\u044f\u0446\u0430." },
+	  { id: "b920c8f4997a72089202f2d9fc2b5fd3", text: "\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0434\u0435\u043d\u0435\u0433 \u0443 \u043c\u0435\u043d\u044f \u043d\u0430 \u0441\u0431\u0435\u0440\u0435\u0433\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u043c \u0441\u0447\u0435\u0442\u0435?" },
+	],
+"hr-HR":[
+	  { id: "ae873cbfa3c42bf0c427be561a0790c3", text: "Kako mogu generirati virtualnu karticu?" },
+	  { id: "395fa814185af5e1a6aeefb52211c851", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "9ec29be5b17fcaf5d8a1e9618b8727f5", text: "Trebam pomo\u0107 s prijenosom." },
+	  { id: "3efbbb18b34132abc1856c2d517e6efa", text: "Koje su kamatne stope za \u0161tedne ra\u010dune?" },
+	  { id: "e410011b40de661aa306af7bd7267fa5", text: "Koji dokumenti su potrebni za podno\u0161enje zahtjeva za kredit?" },
+	],
+"sk-CZ":[
+	  { id: "d51a7e39d071c126a2b21f292b907835", text: "Ak\u00e1 je \u00farokov\u00e1 sadzba mojej p\u00f4\u017ei\u010dky?" },
+	  { id: "fe038638504f91955c2f16942a978d78", text: "M\u00f4\u017eem po\u017eiada\u0165 o do\u010dasn\u00e9 zv\u00fd\u0161enie \u00faverov\u00e9ho limitu?" },
+	  { id: "74800c4dfe4e8c6ee555da4af3ebe9a0", text: "M\u00f4\u017eem z\u00edska\u0165 p\u00f4\u017ei\u010dku na konsolid\u00e1ciu svojich dlhov?" },
+	  { id: "b0eea20737c609ba81818db3fda8eb19", text: "Umo\u017e\u0148uje moja karta medzin\u00e1rodn\u00e9 platby?" },
+	  { id: "08f15baad775b970fd4d3868d524f7d6", text: "Uk\u00e1\u017ete mi mojich posledn\u00fdch desa\u0165 transakci\u00ed." },
+	],
+"sr-XK":[
+	  { id: "1fecf80a8624c6037a3423d8bf2c96c0", text: "Koliko sam potro\u0161io/la na prehrambene proizvode pro\u0161log mjeseca?" },
+	  { id: "eb35cc535fa81b9106a73b2c57399352", text: "Kako da se prijavim za dobijanje elektronskih izvoda?" },
+	  { id: "ae447368ad800cba20f17d443a25d93b", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "8c7ce313ec899a62a0c5c4bbd3814054", text: "Prika\u017eite mi moj portfolio akcija" },
+	  { id: "4dbb5869a402bec11b749479992afa26", text: "Koliki je maksimalni iznos transfera koji mogu da obavim?" },
+	],
+"sq-AL":[
+	  { id: "69c2537bf0afdf35bd54df6ecb483616", text: "Cili \u00ebsht\u00eb shuma minimale p\u00ebr t\u00eb investuar?" },
+	  { id: "e7aae4590f3a2a35619841ba313096f7", text: "Si t\u00eb raportoj nj\u00eb problem me sh\u00ebrbimin?" },
+	  { id: "317d1317570a8c7ab05b7ea2845f7f1e", text: "A mund t\u00eb bisedoj me nj\u00eb k\u00ebshilltar?" },
+	  { id: "ee23e5596b715b1b8108f0f9555d4d43", text: "A mund t\u00eb b\u00ebj nj\u00eb pages\u00eb shtes\u00eb p\u00ebr huan time?" },
+	  { id: "2657f2ef8697dea171ac422de9540ffb", text: "A mund t\u00eb marr nj\u00eb kopje t\u00eb raportit tim t\u00eb kreditit?" },
+	],
+	"cs-CZ":[
+	  { id: "8a8b5a721e5511f5fbe08c66cdbff1b3", text: "Uka\u017ete mi m\u00fdch posledn\u00edch deset transakc\u00ed." },
+	  { id: "6e24973898d363a3ff0db57cac31e1f3", text: "Kolik si mohu p\u016fj\u010dit?" },
+	  { id: "20a101f6c617c471bf37803b061e0e9c", text: "Jak\u00fd je maxim\u00e1ln\u00ed limit p\u0159evodu?" },
+	  { id: "699bcffc844885b5447699b36056a3e1", text: "Mohu chatovat s poradcem?" },
+	  { id: "f9782d41ac9670d8579da80100aeec26", text: "Mohu aktualizovat sv\u00e9 bezpe\u010dnostn\u00ed ot\u00e1zky?" },
+	],
+	"sq-XK":[
+	  { id: "4532d9b2dfc4a7127a7193570241bf39", text: "A mund t\u00eb bisedoj me nj\u00eb k\u00ebshilltar?" },
+	  { id: "1a6e6756566d146c10363091bdb771aa", text: "A mund t\u00eb marr nj\u00eb kopje t\u00eb raportit tim t\u00eb kreditit?" },
+	  { id: "e4ecc883eb2500da50a7cca4962b51e1", text: "A mund t'i automatizoj kursimet mujore?" },
+	  { id: "af54a94e8e334d4c513792f1fe80cf93", text: "Sa para mund t\u00eb marr me borxh?" },
+	  { id: "f4cb4f57ff4e83f721ca12b1ebb57677", text: "Si mund ta rikthej fjal\u00ebkalimin tim?" },
+	],
+	"hu-HU":[
+	  { id: "1aca17eaa92d51a97e398cd5d5aa13c9", text: "Seg\u00edts\u00e9gre van sz\u00fcks\u00e9gem egy fizet\u00e9shez." },
+	  { id: "8b517472f6f22feb0ac08f390a60a670", text: "Ki tudn\u00e1 list\u00e1zni az \u00f6sszes sz\u00e1ml\u00e1mat?" },
+	  { id: "73610463248ba0d8cdd4b494712001ee", text: "Milyen d\u00edjakat kell fizetni a k\u00fclf\u00f6ldi tranzakci\u00f3k\u00e9rt?" },
+	  { id: "86e5aa180c825b37eca7c1168cdde040", text: "Megv\u00e1ltoztathatom a hitel futamidej\u00e9t?" },
+	  { id: "9faa757196f2fe2e12d4d1c5703ae25a", text: "Friss\u00edthetem a biztons\u00e1gi k\u00e9rd\u00e9seimet?" },
+	],
+	"uk-UA":[
+	  { id: "7c4c2140a43f3289fc165c9ad004829e", text: "\u0421\u043a\u0456\u043b\u044c\u043a\u0438 \u0443 \u043c\u0435\u043d\u0435 \u043d\u0430 \u043e\u0449\u0430\u0434\u043d\u043e\u043c\u0443 \u0440\u0430\u0445\u0443\u043d\u043a\u0443?" },
+	  { id: "ff3e82184d72ce5a81567398934f4165", text: "\u042f\u043a \u044f \u043c\u043e\u0436\u0443 \u0437\u0430\u043c\u043e\u0432\u0438\u0442\u0438 \u043d\u043e\u0432\u0443 \u043a\u0430\u0440\u0442\u043a\u0443?" },
+	  { id: "81c247598036a38618311aa66ea57edf", text: "\u0427\u0438 \u043c\u043e\u0436\u0443 \u044f \u043e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u0432\u0438\u043f\u0438\u0441\u043a\u0438 \u0437 \u043c\u043e\u0433\u043e \u0440\u0430\u0445\u0443\u043d\u043a\u0443 \u0437\u0430 \u043c\u0438\u043d\u0443\u043b\u0438\u0439 \u0440\u0456\u043a?" },
+	  { id: "e439e8949587b4d746628dfab6874c7b", text: "\u042f\u043a \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u043f\u0440\u044f\u043c\u0438\u0439 \u0434\u0435\u043f\u043e\u0437\u0438\u0442?" },
+	  { id: "c90691a0f862245e7ff9a6b5bbf0cd16", text: "\u042f\u043a\u0456 \u0432\u0430\u0440\u0456\u0430\u043d\u0442\u0438 \u043a\u0440\u0435\u0434\u0438\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0443 \u043c\u0435\u043d\u0435 \u0454?" },
+	],
+	"sk-SK":[
+	  { id: "f4c8b521abca28175e9cbe216e460ceb", text: "Ak\u00e1 je \u00farokov\u00e1 sadzba mojej p\u00f4\u017ei\u010dky?" },
+	  { id: "8182aad79d8f73bc0477b214181bd30e", text: "M\u00f4\u017eem po\u017eiada\u0165 o do\u010dasn\u00e9 zv\u00fd\u0161enie \u00faverov\u00e9ho limitu?" },
+	  { id: "670058c1d761cc20790be88836192b5a", text: "M\u00f4\u017eem z\u00edska\u0165 p\u00f4\u017ei\u010dku na konsolid\u00e1ciu svojich dlhov?" },
+	  { id: "cfd5e0db916870c10ac0a957109cb9a7", text: "Umo\u017e\u0148uje moja karta medzin\u00e1rodn\u00e9 platby?" },
+	  { id: "85f50e759bf4457284a08e1da5a4bc89", text: "Uk\u00e1\u017ete mi mojich posledn\u00fdch desa\u0165 transakci\u00ed." },
+	],
+	"hr-BA":[
+	  { id: "b68d9db616b6025844b097d48fc800a7", text: "Mogu li vidjeti neobra\u0111ene uplate?" },
+	  { id: "b8ec5eb6c336ddce392be1c12aa13c66", text: "Kako mogu uraditi reprogram kredita?" },
+	  { id: "d5667352509fb4fecc7dd31cb5b7210f", text: "Potrebna mi je pomo\u0107 oko prenosa novca?" },
+	  { id: "70ad926cfa7ac739c8f3544b32d11950", text: "Koliko imam \u0161tednje na ra\u010dunu?" },
+	  { id: "ff57d5a6c7c000b94ef8ea69d94fed7c", text: "Aktiviraj Apple Pay za moju Visa karticu." },
+	],
+	"de-AT":[
+	  { id: "396043eff7fe1eecfbad93e45668a523", text: "Kann ich eine zus\u00e4tzliche Zahlung auf meinen Kredit leisten?" },
+	  { id: "8239affc3974cea629024740eb1f80ef", text: "Was ist mein Kontostand?" },
+	  { id: "9f883be4b6ff5312cf74a790104d0e74", text: "Kann ich meine Karten-PIN \u00e4ndern?" },
+	  { id: "e7725627a25441a5951854da64d0d8dd", text: "Was ist der Zinssatz f\u00fcr ein Geldmarktkonto?" },
+	  { id: "48b5887682d3bcbaace1bfb3e7fcf74f", text: "Bitte richten Sie eine wiederkehrende \u00dcberweisung von 1000 Euro auf mein Konto in der MusterPlatz 1, Dortmund, am ersten jeden Monats ein." },
+	],
+	"de-DE":[
+	  { id: "04a5770adc6428ecd0ee86078c54758c", text: "Kann ich eine zus\u00e4tzliche Zahlung auf meinen Kredit leisten?" },
+	  { id: "022e3e0a3176e01dbab4a645592c5b64", text: "Was ist mein Kontostand?" },
+	  { id: "b73b7b79778a01429e33be54d6e5bf2b", text: "Kann ich meine Karten-PIN \u00e4ndern?" },
+	  { id: "e7b0ee8b1ed97007eb882e27b55c8060", text: "Was ist der Zinssatz f\u00fcr ein Geldmarktkonto?" },
+	  { id: "dc5c0d9409071f965f974f68ba359806", text: "Bitte richten Sie eine wiederkehrende \u00dcberweisung von 1000 Euro auf mein Konto in der MusterPlatz 1, Dortmund, am ersten jeden Monats ein." },
+	],
+	"ro-RO":[
+	  { id: "7cd227cde780d2ef2b78de056b465dd6", text: "Pot face o plat\u0103 suplimentar\u0103 pentru \u00eemprumutul meu?" },
+	  { id: "ccd84d39dd701565ac484813d4c95b8a", text: "Pot vizualiza depozitele \u00een a\u0219teptare?" },
+	  { id: "9a9a0d8b90382de17cfad45b02333777", text: "C\u00e2t am cheltuit pe alimente luna trecut\u0103?" },
+	  { id: "05a5e2af230dfb08271fcf45031963ef", text: "Care este soldul actual al \u00eemprumutului meu?" },
+	  { id: "6f38700d17abda4b7f0c970f3f220565", text: "Pot retrage din depozitul meu fix mai devreme?" },
+	],
+	"sr-RS":[
+	  { id: "d1e4543d598109562a332b14831057fe", text: "Kako da se prijavim za dobijanje elektronskih izvoda?" },
+	  { id: "d01f85d8669acb8c8a089c117135070d", text: "Da li mogu da otvorim novi \u0161tedni ra\u010dun?" },
+	  { id: "78dd5c7b0f02f76beafac01056d3e2e4", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "984bbc5d1cc356d4c401d6cf32068ea2", text: "Prika\u017eite mi moj portfolio akcija" },
+	  { id: "b939cd4298f6dc3c2febd0078a5ec58b", text: "Koliki je maksimalni iznos transfera koji mogu da obavim?" },
+	],
+	"sr-BA":[
+	  { id: "8796b3d5c81037f104258a8d090a141d", text: "Koliko sam potro\u0161io/la na prehrambene proizvode pro\u0161log mjeseca?" },
+	  { id: "5e7232444a1c147acc05693d4463b96b", text: "Kako da se prijavim za dobijanje elektronskih izvoda?" },
+	  { id: "f37d152b4633c71e67fd69c1ae93479b", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "e9791d55141fdfe6be87b436cd716d7a", text: "Prika\u017eite mi moj portfolio akcija" },
+	  { id: "523b0a48148e5cdf866cf84a5bd52ae3", text: "Koliki je maksimalni iznos transfera koji mogu da obavim?" },
+	],
+	"sl-SI":[
+	  { id: "01b01b7cfb7a7055be1b6a4de68974a1", text: "Kaj se zgodi, \u010de zamudim pla\u010dilo?" },
+	  { id: "85d497ed3192e14b4a616e3d49f77c7e", text: "Ali lahko s svojo kartico opravljam pla\u010dila v tujino?" },
+	  { id: "706c5a9d4309b5a25ab21b33936c291b", text: "Vzpostavite trajni nalog za pla\u010dilo najemnine." },
+	  { id: "cf4a7178b68e7a8a83dd5ad4ccd7b34b", text: "Poka\u017ei mi zadnje transakcije s kartico." },
+	  { id: "741edbba3c99270673c61190c818b0b5", text: "Kak\u0161na je obrestna mera za moje posojilo?" },
+	],
+	"sq-ME":[
+	  { id: "9835ad964a105a214004ca53da4bec1f", text: "A mund t\u00eb bisedoj me nj\u00eb k\u00ebshilltar?" },
+	  { id: "b911220b089549466df630c4ae97be85", text: "A mund t\u00eb marr nj\u00eb kopje t\u00eb raportit tim t\u00eb kreditit?" },
+	  { id: "145b5e7d8c98027d61cc63210a4fc026", text: "A mund t'i automatizoj kursimet mujore?" },
+	  { id: "e3d0805789a1aee1ea4c3f284f0eb0e8", text: "Sa para mund t\u00eb marr me borxh?" },
+	  { id: "757e2930740b9faedfa712814bd15dd9", text: "Sa ka qen\u00eb bilanci i llogaris\u00eb sime m\u00eb 15 janar 2023?" },
+	],
+	"bs-BA":[
+	  { id: "8c1df163c22faec87b052de4d1a7ab95", text: "Mogu li pristupiti svojim pro\u0161logodi\u0161njim izvorima?" },
+	  { id: "77d7ce9e5d1c6de40e8fd0b37e2531ab", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "18ba2d02df5913fc342d0a425964c33a", text: "Mo\u017eete li mi dati detalje transakcije od 150KM na adresi \u0160efika Dori\u0107a. 106, Zenica, 12. avgusta 2023?" },
+	  { id: "ffcf01b8c63cc5b1700b873835d65ca1", text: "Koliko je kamatna stopa mog kredita?" },
+	  { id: "f5c2d5a171f3124cb471b3478d746a8f", text: "Kolika je kamatna stopa na ra\u010dunu nov\u010danog tr\u017ei\u0161ta?" },
+	],
+	"bs-ME":[
+	  { id: "4f933c66753464a403bc3b4d77db799f", text: "Aktivirajte Apple Pay za moju Visa karticu." },
+	  { id: "c804ecc6d6978f94e97bde544a17adc0", text: "Kada \u0107e biti skinuta sljede\u0107a rata za Netflix?" },
+	  { id: "32934d24ce88a6ab7eef617a283eee3a", text: "Koje su kamatne stope za \u0161tedne ra\u010dune?" },
+	  { id: "4fb06c902171b01c9e650b0f79df72bb", text: "Poka\u017eite mi moje nedavne transakcije karticom." },
+	  { id: "b2462e179032640d880b72ff2c2f8442", text: "Mogu li online aplicirati za li\u010dni kredit?" },
+	],
+	"pl-PL":[
+	  { id: "1386bb3df2098c779fc07fcd591919a8", text: "Ile wyda\u0142em na karcie w tym miesi\u0105cu?" },
+	  { id: "6ae7b892098f81f7d78c21e083c74339", text: "Czy mog\u0119 dokona\u0107 dodatkowej sp\u0142aty po\u017cyczki?" },
+	  { id: "d2517d161041d83f93363345b36bc599", text: "Czy mog\u0119 pobra\u0107 wyci\u0105g bankowy?" },
+	  { id: "6cc4dbd2b31cfcbb255cfecd11bdb81f", text: "Czy mog\u0119 zwi\u0119kszy\u0107 limit karty?" },
+	  { id: "3bf2e6d6c1595e435207971f33b0d140", text: "Jak mog\u0119 refinansowa\u0107 swoj\u0105 po\u017cyczk\u0119?" },
+	],
+	
+	
+        };
+
+
+console.log(countryTexts.length);
+var idLength = countryTexts;
+console.log(",,,,,,,,,,,,,,,,,,,,,",idLength);
+// Loop texts array three times
+// console.log("...............",texts);
+countryTexts = countryTexts;
+// console.log("...............",texts);
+nextAudio();
+var currentIndex = 0; // Track which text is being displayed
+
+        function updateText() {
+            var selectedCountry = document.getElementById("userCountry").value;
+            var displayDiv = document.getElementById("texttorec");
+            displayDiv.innerHTML = ""; // Clear previous text
+            currentIndex = 0; // Reset index when country changes
+
+            if (selectedCountry && countryTexts[selectedCountry].length > 0) {
+                displayText(selectedCountry);
+            }
+        }
+
+        function displayText(country) {
+            var displayDiv = document.getElementById("texttorec");
+            displayDiv.innerHTML = ""; // Clear previous text
+
+            if (currentIndex < countryTexts[country].length) {
+                var p = document.createElement("p");
+                p.textContent = countryTexts[country][currentIndex].text;
+                displayDiv.appendChild(p);
+            }
+        }
+
+function nextAudio() {
+    var selectedCountry = document.getElementById("userCountry").value;
+    var displayDiv = document.getElementById("texttorec");
+
+    if (selectedCountry && currentIndex < countryTexts[selectedCountry].length - 1) {
+        currentIndex++;
+        displayText(selectedCountry);
+    } else if (selectedCountry && currentIndex === countryTexts[selectedCountry].length - 1) {
+        // If we've reached the last text, hide #texttorec and #record
+        $('#texttorec').hide();
+        $('#record').hide();
+		$('#alert').hide();
+
+        // Optionally, show a message like "Thank you!" or something similar
+        var doneDiv = document.getElementById("done");
+        doneDiv.classList.remove("hidden"); // Make it visible
+    }
+}
+
+</script>
+</html>
