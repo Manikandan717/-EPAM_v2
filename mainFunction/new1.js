@@ -237,7 +237,30 @@ function sendAudio()
 //     $('#texttorec').hide();
 //     $('#done').show();
 // }
-
+function startTimer() {
+    seconds = 0;
+    minutes = 0;
+    updateTimerDisplay();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+ 
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+ 
+function updateTimer() {
+    seconds++;
+    if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
+    }
+    updateTimerDisplay();
+}
+ 
+function updateTimerDisplay() {
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = `${padZero(minutes)}:${padZero(seconds)}`;
+}
 function nextAudio() {
     $('#save').hide();
     $('#analyser').hide();
@@ -279,42 +302,91 @@ function audioDone() {
     $('#done').show(); // Show the "done" element after all texts are recorded
 }
 
-function toggleRecording( e ) {
-    if( !window.audioInit ) initAudio();
-    console.log( 'audioRecorder', audioRecorder )
+// function toggleRecording( e ) {
+//     if( !window.audioInit ) initAudio();
+//     console.log( 'audioRecorder', audioRecorder )
     
-    if( !audioRecorder )
-    {
-        return setTimeout( function(){ toggleRecording(e)}, 100 );
+//     if( !audioRecorder )
+//     {
+//         return setTimeout( function(){ toggleRecording(e)}, 100 );
+//     }
+//     $("#alert").hide()
+//     console.log( 'tEXT', $('#record').text() );
+//     if ($('#record').text().match(/Stop/)) {
+//         // stop recording
+//         console.log( 'stop' )
+//         audioRecorder.stop();
+//         $('#record').removeClass("btn-danger");
+//         $('#record').text('Record Again');
+//         $('#save').show();
+//         $('#analyser').hide();
+//         $('#wavedisplay').show();
+//         audioRecorder.getBuffers( gotBuffers );
+//     } else {
+//         // start recording
+//         if (!audioRecorder)
+//             return;
+//         console.log( 'record')
+//         $('#save').hide();
+//         $('#analyser').show();
+//         $('#wavedisplay').hide();
+//         $('.audio').remove();
+//         $('#record').addClass("btn-danger");
+//         $('#record').text('Stop Recording');
+//         audioRecorder.clear();
+//         audioRecorder.record();
+//     }
+// }
+function toggleRecording(e) {
+    if (!window.audioInit) initAudio();
+    console.log('audioRecorder', audioRecorder);
+    if (!audioRecorder) {
+        return setTimeout(function() { toggleRecording(e) }, 100);
     }
-    $("#alert").hide()
-    console.log( 'tEXT', $('#record').text() );
+    console.log('tEXT', $('#record').text());
     if ($('#record').text().match(/Stop/)) {
         // stop recording
-        console.log( 'stop' )
+        console.log('stop');
         audioRecorder.stop();
         $('#record').removeClass("btn-danger");
         $('#record').text('Record Again');
         $('#save').show();
         $('#analyser').hide();
         $('#wavedisplay').show();
-        audioRecorder.getBuffers( gotBuffers );
+        stopTimer();
+        hideTimer(); // Add this line to hide the timer
+        audioRecorder.getBuffers(gotBuffers);
     } else {
         // start recording
         if (!audioRecorder)
             return;
-        console.log( 'record')
+        console.log('record');
         $('#save').hide();
         $('#analyser').show();
         $('#wavedisplay').hide();
         $('.audio').remove();
         $('#record').addClass("btn-danger");
+        $('#alert').hide();
         $('#record').text('Stop Recording');
         audioRecorder.clear();
         audioRecorder.record();
+        showAudioControls();
+        startTimer();
     }
 }
 
+function hideTimer() {
+    document.getElementById('timer').classList.add('hidden');
+}
+
+function padZero(num) {
+    return num.toString().padStart(2, '0');
+}
+function showAudioControls() {
+    // document.getElementById('audioPlayback').classList.remove('hidden');
+    document.getElementById('timer').classList.remove('hidden');
+}
+ 
 function convertToMono( input ) {
     var splitter = audioContext.createChannelSplitter(2);
     var merger = audioContext.createChannelMerger(2);
