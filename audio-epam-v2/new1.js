@@ -32,9 +32,9 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 */
 
 function saveAudio() {
-    audioRecorder.exportWAV( doneEncoding );
+    // audioRecorder.exportWAV( doneEncoding );
     // could get mono instead by saying
-    // audioRecorder.exportMonoWAV( doneEncoding );
+    audioRecorder.exportMonoWAV( doneEncoding );
 }
 
 function gotBuffers( buffers ) {
@@ -44,11 +44,47 @@ function gotBuffers( buffers ) {
 
     // the ONLY time gotBuffers is called is right after a new recording is completed -
     // so here's where we should set up the download.
-    audioRecorder.exportWAV( doneEncoding );
-    // audioRecorder.exportMonoWAV( doneEncoding );
+    // audioRecorder.exportWAV( doneEncoding );
+    audioRecorder.exportMonoWAV( doneEncoding );
+}
+function parseWAVInfo(blob) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const buffer = new DataView(reader.result);
+
+        // Extract WAV header info
+        const numChannels = buffer.getUint16(22, true);
+        const sampleRate = buffer.getUint32(24, true);
+        const bitsPerSample = buffer.getUint16(34, true);
+        const dataSize = buffer.getUint32(40, true);
+        const durationSec = dataSize / (sampleRate * numChannels * (bitsPerSample / 8));
+
+        const duration = formatDuration(durationSec);
+        const fileSizeKB = (blob.size / 1024).toFixed(1);
+        const bitrate = ((sampleRate * bitsPerSample * numChannels) / 1000).toFixed(2); // in kbps
+        const sampleEncoding = `${bitsPerSample}-bit Signed Integer PCM`;
+
+        // Log in the format you want
+        console.log(`Channels       : ${numChannels}`);
+        console.log(`Sample Rate    : ${sampleRate}`);
+        console.log(`Precision      : ${bitsPerSample}-bit`);
+        console.log(`Duration       : ${duration} = ${dataSize} samples`);
+        console.log(`File Size      : ${fileSizeKB}k`);
+        console.log(`Bit Rate       : ${bitrate}k`);
+        console.log(`Sample Encoding: ${sampleEncoding}`);
+    };
+    reader.readAsArrayBuffer(blob);
+}
+
+function formatDuration(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    const millis = Math.floor((seconds % 1) * 100);
+    return `${padZero(mins)}:${padZero(secs)}.${padZero(millis)}`;
 }
 
 function doneEncoding( blob ) {
+    parseWAVInfo(blob);
     Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav", function(durl){
         window.dataURI = durl;
         fetch(durl)
@@ -98,14 +134,35 @@ function sendAudio()
 
     var ageRange;
 
-    if (age >= 18 && age <= 30) {
-        ageRange = 'Young';
-    } else if (age >= 31 && age <= 60) {
-        ageRange = 'Middle-aged';
-    }else{
-        ageRange = 'adults';
+    // if (age >= 18 && age <= 30) {
+    //     ageRange = 'Young';
+    // } else if (age >= 31 && age <= 60) {
+    //     ageRange = 'Middle-aged';
+    // }else{
+    //     ageRange = 'adults';
+    // }
+    if (age < 18) {
+        ageRange = 'A';
+    } else if (age >= 18 && age <= 24) {
+        ageRange = 'B';
+    } else if (age >= 25 && age <= 29) {
+        ageRange = 'C';
+    } else if (age >= 30 && age <= 35) {
+        ageRange = 'D';
+    } else if (age >= 36 && age <= 39) {
+        ageRange = 'E';
+    } else if (age >= 40 && age <= 45) {
+        ageRange = 'F';
+    } else if (age >= 46 && age <= 49) {
+        ageRange = 'G';
+    } else if (age >= 50 && age <= 55) {
+        ageRange = 'H';
+    } else if (age > 55) {
+        ageRange = 'I';
+    } else {
+        ageRange = 'J';
     }
-
+    
 
     if (speakerid === '') {
         alert('Please fill in your Speaker Id');
@@ -143,8 +200,9 @@ function sendAudio()
     $('#mymodal').find('.modal-body').html('<div class="spinner-border text-secondary spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Sending Audio File...');
    
     // $.post( 'http://localhost:8088/audio_upload', {
-    $.post( 'https://service.tensoract.com/audio_epam_v2', {
-        // $.post( 'http://54.87.91.147:8089/audio_EPAM', {
+    // $.post( 'https://service.tensoract.com/audio_epam_v2', {
+        $.post( 'https://service.tensoract.com/audio_EPAM', {
+            // $.post('http://54.87.91.147:8088/audio_upload', {
         // name:name,
         // gender:gender,
         // age:age,
@@ -161,6 +219,7 @@ function sendAudio()
         nativeLanguage: nativeLang,
         id: audioId,
         sentenceUid:audioId,
+        voiceCode: speakerid + '-' + selectedCountry.substring(0, 2).toUpperCase() + '-' + gender.charAt(0).toUpperCase(),
         // speakerId_sequence:speakerId_sequence,
         speed: selectedCountry,//Cofrtable_slow
         text: textToSend,//Wake_word
@@ -305,7 +364,7 @@ function audioDone() {
 
 function toggleRecording(e) {
     if (!window.audioInit) initAudio();
-    console.log('audioRecorder', audioRecorder);
+    // console.log('audioRecorder', audioRecorder);
     if (!audioRecorder) {
         return setTimeout(function() { toggleRecording(e) }, 100);
     }
