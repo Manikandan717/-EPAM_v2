@@ -1,0 +1,674 @@
+<!doctype html>
+
+<html>
+<head>
+	<meta charset="UTF-8"> <!-- Important for potentially non-English characters -->
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Audio Recorder</title>
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<!-- Make sure these paths are correct relative to your HTML file -->
+    <!-- Add placeholder scripts if you don't have the actual files -->
+	<script>
+        // Placeholder for audiodisplay.js if not available
+        // window.AudioDisplay = class { constructor() {} update() {} };
+        // Placeholder for recorder.js if not available
+        // window.Recorder = class { constructor() {} record() {} stop() {} exportWAV() {} };
+        // Placeholder for new1.js if not available
+        // function toggleRecording(btn) { console.warn("new1.js toggleRecording not loaded", btn); }
+        // function sendAudio(callback) { console.warn("new1.js sendAudio not loaded, using placeholder"); window.placeholderSendAudio(callback); }
+    </script>
+	<!-- ****** ADJUST THESE PATHS IF NEEDED ****** -->
+	<!-- Ensure these point to the correct location relative to index.html -->
+	<script src="audio-epam-v2/audiodisplay.js"></script>
+	<script src="audio-epam-v2/recorderjs/recorder.js"></script>
+	<script src="audio-epam-v2/new1.js"></script>
+	<!-- ******************************************* -->
+	<style>
+	/* ... (keep existing CSS) ... */
+    canvas {
+		display: inline-block;
+		background: #cccccc;
+		width: 100%;
+		height: 100px;
+	}
+	#controls {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		height: 20%;
+		width: 100%;
+	}
+	.audio {
+		width: 100%;
+	}
+	.hidden {
+		display: none !important; /* Use !important to override potential conflicts */
+	}
+
+#title
+{
+	font-size: 14px;
+	color: #777;
+}
+
+#texttorec
+{
+	border: 1px solid #cccccc;
+	padding: 20px;
+	font-size: 26px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border-radius: 5px;
+    min-height: 100px; /* Give it some min height */
+}
+#submitRecording { /* Changed ID from #save */
+    float: right
+}
+#alert{
+    border-color: #d38e8e;
+    background-color: #fff0f2;
+    line-height: 1.6;
+}
+#done
+{
+	font-size: 30px;
+	line-height: 150px;
+	text-align: center;
+	color: #444;
+    margin-top: 20px;
+}
+#timer {
+	font-size: 20px;
+	color: #333;
+	margin-top: 10px;
+	text-align: center;
+}
+/* Keep recorder.js controls hidden if new1.js handles the UI */
+#start-record-btn, #pause-record-btn, #stop-record-btn, #recording-cont {
+	display: none !important;
+}
+#audioPlayback {
+    width: 100%; /* Make audio player take full width */
+    margin-top: 15px; /* Add some space above the player */
+    margin-bottom: 15px; /* Add some space below the player */
+}
+#audioPlaybackContainer {
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+#audioStatusMessage {
+    color: #777;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+}
+#record { /* Explicitly hide the original record button if it exists in HTML */
+    display: none !important;
+}
+</style>
+
+</head>
+<body>
+	<!-- ... (keep existing modal HTML) ... -->
+    <div id="mymodal" class="modal" tabindex="-1" role="dialog">
+		<!-- Modal content -->
+        <div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Modal body text goes here.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<main role="main">
+		<div class="container-fluid">
+			<div class="row">
+                <!-- ... (keep existing left column HTML - User Info Form) ... -->
+				<div class="col-lg-3 col-md-4 ctrlpanel vh-100 overflow-auto pe-2 pb-2 border-end"> <!-- Added border for visual separation -->
+				    <h5>Please complete your info:</h5>
+                    <form id="userInfoForm"> <!-- Added ID for easier reset -->
+                        <div class="form-group mb-2"> <!-- Added margin bottom -->
+                            <label for="userId">Speaker Id</label>
+                            <input type="text" class="form-control" id="userId" aria-describedby="Enter your speaker id" placeholder="Enter your speaker id" required> <!-- Added required -->
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userName">Name</label>
+                            <input type="text" class="form-control" id="userName" aria-describedby="Enter your name" placeholder="Enter your name" required> <!-- Added required -->
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userGender">Gender</label>
+                            <select class="form-control" id="userGender" required> <!-- Added required -->
+                                <option value="">Select Gender</option> <!-- Added default -->
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option> <!-- Consider adding -->
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userAge">Age</label>
+                            <input type="number" class="form-control" id="userAge" aria-describedby="Enter your age" placeholder="Enter your age" required> <!-- Added required -->
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="proficiencyLevel">Proficiency Level</label>
+                            <select class="form-control" id="proficiencyLevel" required> <!-- Added required -->
+                                <option disabled selected value="">Select proficiency level</option>
+                                <option value="A1 (Beginner)">A1 (Beginner)</option>
+                                <option value="A2 (Elementary)">A2 (Elementary)</option>
+                                <option value="B1 (Intermediate)">B1 (Intermediate)</option>
+                                <option value="B2 (Upper Intermediate)">B2 (Upper Intermediate)</option>
+                                <option value="C1 (Advanced)">C1 (Advanced)</option>
+                                <option value="C2 (Proficient)">C2 (Proficient)</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="nativeLanguage">Native Language</label>
+                            <input type="text" class="form-control" id="nativeLanguage" placeholder="Enter your native language" required> <!-- Added required -->
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userCountry">Recording Language/Locale</label>
+                            <!-- Values MUST match the 'language' field in data.json -->
+                            <select class="form-control" id="userCountry" required> <!-- Added required -->
+                                <option value="">Select a language/locale</option>
+                                <option value="en-US">en-US (US English)</option>
+                                <option value="en-UK">en-UK (UK English)</option>
+                                <option value="ru-RU">ru-RU (Russian)</option>
+                                <option value="hr-HR">hr-HR (Croatian)</option>
+                                <!-- <option value="sk-CZ">sk-CZ (Slovak - Czechia?)</option> --> <!-- Corrected/Removed ambiguous -->
+                                <option value="sr-XK">sr-XK (Serbian - Kosovo)</option>
+                                <option value="sq-AL">sq-AL (Albanian - Albania)</option>
+                                <option value="cs-CZ">cs-CZ (Czech)</option>
+                                <option value="sq-XK">sq-XK (Albanian - Kosovo)</option>
+                                <option value="hu-HU">hu-HU (Hungarian)</option>
+                                <option value="uk-UA">uk-UA (Ukrainian)</option>
+                                <option value="sk-SK">sk-SK (Slovak - Slovakia)</option>
+                                <option value="hr-BA">hr-BA (Croatian - Bosnia)</option>
+                                <option value="de-AT">de-AT (German - Austria)</option>
+                                <option value="de-DE">de-DE (German - Germany)</option>
+                                <option value="ro-RO">ro-RO (Romanian)</option>
+                                <option value="sr-RS">sr-RS (Serbian - Serbia)</option>
+                                <option value="sr-BA">sr-BA (Serbian - Bosnia)</option>
+                                <option value="sl-SI">sl-SI (Slovenian)</option>
+                                <option value="sq-ME">sq-ME (Albanian - Montenegro)</option>
+                                <option value="bs-BA">bs-BA (Bosnian - Bosnia)</option>
+                                <option value="bs-ME">bs-ME (Bosnian - Montenegro)</option>
+                                <option value="pl-PL">pl-PL (Polish)</option>
+                            </select>
+                        </div>
+                    </form>
+                    <button id="clearAllData" class="btn btn-danger mt-2">Reset Form</button> <!-- Added margin top -->
+				</div>
+
+<div class="col-lg-9 col-md-8 imgdisplay pt-3"> <!-- Added padding top -->
+				<!-- ... (keep title/subtitle divs) ... -->
+                <div id="title"></div>
+				<div id="subtitle"></div>
+
+                <!-- Text display area -->
+				<div id="texttorec">Kindly select language/locale first</div>
+
+                <!-- Reference Audio Player - MODIFIED TO ALWAYS BE VISIBLE -->
+                <div id="audioPlaybackContainer">
+                    <audio id="audioPlayback" controls></audio>
+                    <div id="audioStatusMessage">Select a language to load reference audio</div>
+                </div>
+
+                <!-- Completion Message -->
+				<div id="done" class="hidden">Thank you! All sentences for this language recorded.</div>
+
+                <!-- Recorder elements -->
+				<canvas id="analyser" class="hidden"></canvas>
+				<canvas id="wavedisplay" class="hidden"></canvas>
+				<div id="media"></div>
+                <div id="timer" class="hidden">00:00</div>
+
+
+                <!-- Control Buttons -->
+				<button id="submitRecording" type="button" class="btn btn-info hidden">Submit</button>
+                <br>
+                <br>
+                <!-- Instructions -->
+                <!-- ... (keep existing instructions alert) ... -->
+                 <div class="alert mt-3 p-3 position-relative" role="alert" id="alert">
+                    <div class="d-flex align-items-start">
+                      <div>
+                        <h6 class="fw-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="red" stroke="red" stroke-width="0.5" class="bi bi-exclamation-triangle me-2 mb-1" viewBox="0 0 16 16"> <!-- Adjusted margin -->
+                                <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                            </svg>Important Recording Instructions
+                        </h6>
+                        <div class="mb-0 px-3"> <!-- Removed ID, cleaner structure -->
+							<b class="text-danger px-1">Mandatory Notice:</b> Record one sentence/question at a time, ensuring each is its own separate clip.<br>
+                            Pause briefly before and after reading each sentence/question to allow for clean editing.<br>
+                            <b class="text-danger px-1">No Repetition Within a Sentence:</b>
+                            <ul>
+                                <li>If you make a mistake, stop and re-record the entire sentence/question.</li>
+                                <li>Do not try to restart the sentence halfway through.</li>
+                            </ul>
+                            <b class="text-danger px-1">Tone and Clarity:</b>
+                            <ul>
+                                <li>Speak clearly and confidently, enunciating your words without over-exaggerating.</li>
+                                <li>Avoid mumbling, whispering, or speaking too loudly.</li>
+                            </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+		</div>
+	</div>
+</main>
+
+<script>
+    // Global variables
+    let allData = [];
+    let currentTexts = [];
+    let currentIndex = 0;
+    let selectedLanguage = null;
+
+    // DOM Elements
+    const countrySelect = document.getElementById('userCountry');
+    const textDisplayDiv = document.getElementById('texttorec');
+    const submitButton = document.getElementById('submitRecording');
+    const doneDiv = document.getElementById('done');
+    const alertDiv = document.getElementById('alert');
+    const userInfoForm = document.getElementById('userInfoForm');
+    const resetButton = document.getElementById('clearAllData');
+    const audioPlayer = document.getElementById('audioPlayback');
+    const audioStatusMessage = document.getElementById('audioStatusMessage');
+    const audioPlaybackContainer = document.getElementById('audioPlaybackContainer');
+
+    // --- Functions ---
+
+    // Function to fetch JSON data
+    async function loadData() {
+        try {
+            // ***** 1. ENSURE data.json IS IN THE SAME FOLDER AS index.html or provide correct relative path *****
+            const response = await fetch('data.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            allData = await response.json();
+            console.log("Data loaded successfully:", allData.length, "items total");
+            if (!Array.isArray(allData)) {
+                console.error("Loaded data is not an array!", allData);
+                throw new Error("JSON data is not in the expected array format.");
+            }
+            countrySelect.disabled = false;
+            audioStatusMessage.textContent = "Select a language to load reference audio";
+        } catch (error) {
+            console.error("Could not load or parse data.json:", error);
+            textDisplayDiv.textContent = "Error loading recording data. Check console and data.json path/format.";
+            countrySelect.disabled = true;
+            audioStatusMessage.textContent = "Error loading data. Check data.json file.";
+            audioStatusMessage.style.color = "red";
+        }
+    }
+
+    // Function to update UI based on language selection
+    function updateForLanguageSelection() {
+        selectedLanguage = countrySelect.value;
+        currentIndex = 0;
+        currentTexts = [];
+
+        // Reset audio player but keep it visible
+        audioPlayer.pause();
+        audioPlayer.src = ''; // Clear source
+        audioPlayer.load(); // Reset audio element state
+
+        if (selectedLanguage && Array.isArray(allData)) {
+            currentTexts = allData.filter(item => item.language === selectedLanguage);
+            console.log(`Filtered ${currentTexts.length} items for language: ${selectedLanguage}`);
+        }
+
+        if (currentTexts.length > 0) {
+            displayText(); // Display the first text
+            submitButton.disabled = false;
+            submitButton.classList.remove('hidden');
+            doneDiv.classList.add('hidden');
+            textDisplayDiv.classList.remove('hidden');
+            alertDiv.classList.remove('hidden');
+        } else {
+            // No language selected or no texts found
+            submitButton.disabled = true;
+            submitButton.classList.add('hidden');
+            doneDiv.classList.add('hidden');
+            textDisplayDiv.classList.remove('hidden');
+
+            if (!selectedLanguage) {
+                textDisplayDiv.textContent = "Kindly select language/locale first";
+                alertDiv.classList.remove('hidden');
+                audioStatusMessage.textContent = "Select a language to load reference audio";
+            } else {
+                textDisplayDiv.textContent = `No sentences found for ${selectedLanguage}. Check data.json or select another language.`;
+                alertDiv.classList.add('hidden');
+                audioStatusMessage.textContent = `No reference audio for ${selectedLanguage}`;
+            }
+        }
+    }
+
+    // Function to display the current text from the filtered list
+    function displayText() {
+        // Reset the audio player state but keep it visible
+        audioPlayer.pause();
+        audioPlayer.removeAttribute('src');
+        audioPlayer.load();
+        audioStatusMessage.textContent = "Loading reference audio...";
+        audioStatusMessage.style.color = "#777"; // Reset status message color
+
+        if (currentTexts && currentTexts.length > 0) {
+            if (currentIndex < currentTexts.length) {
+                const currentTextData = currentTexts[currentIndex];
+                textDisplayDiv.textContent = currentTextData.text;
+
+                // Store data attributes
+                textDisplayDiv.dataset.language = currentTextData.language || '';
+                textDisplayDiv.dataset.sentenceuid = currentTextData.sentenceUid || '';
+                textDisplayDiv.dataset.audiouid = currentTextData.audioUid || '';
+                textDisplayDiv.dataset.audios3uri = currentTextData.audioS3Uri || '';
+
+                console.log(`Displaying text ${currentIndex + 1}/${currentTexts.length} for ${selectedLanguage}: "${currentTextData.text}" (SentenceUID: ${currentTextData.sentenceUid})`);
+
+                // --- Reference Audio Player Logic - MODIFIED TO ALWAYS SHOW THE PLAYER ---
+                const audioPath = currentTextData.audioS3Uri;
+
+                if (audioPath && audioPath.trim() !== '') {
+                    const fullAudioPath = audioPath.trim();
+                    console.log(`Attempting to load reference audio from: ${fullAudioPath}`);
+
+                    // Set the source and load the audio
+                    audioPlayer.src = fullAudioPath;
+                    audioPlayer.load();
+
+                    // Handle loading events
+                    audioPlayer.onloadedmetadata = () => {
+                        console.log(`Audio metadata loaded for: ${fullAudioPath}. Duration: ${audioPlayer.duration}`);
+                        audioStatusMessage.textContent = `Reference audio loaded (${Math.round(audioPlayer.duration)}s)`;
+                        audioStatusMessage.style.color = "green";
+                    };
+
+                    // Handle errors
+                    audioPlayer.onerror = (e) => {
+                        console.error(`Error loading audio source: ${fullAudioPath}`, e);
+                        // Log specific error if available
+                        if (audioPlayer.error) {
+                            console.error(`Audio Element Error Code: ${audioPlayer.error.code}, Message: ${audioPlayer.error.message}`);
+                        }
+                        audioStatusMessage.textContent = `Error loading reference audio. Path: ${fullAudioPath}`;
+                        audioStatusMessage.style.color = "red";
+                    };
+
+                } else {
+                    console.log("No valid audioS3Uri found for this item.");
+                    audioStatusMessage.textContent = "No reference audio available for this sentence";
+                    audioStatusMessage.style.color = "#777";
+                }
+                // --- End Reference Audio Player Logic ---
+
+                // Ensure other elements are correctly shown/hidden
+                textDisplayDiv.classList.remove('hidden');
+                submitButton.classList.remove('hidden');
+                submitButton.disabled = false;
+                alertDiv.classList.remove('hidden');
+                doneDiv.classList.add('hidden');
+
+            } else {
+                // All texts for this language are done
+                showCompletionMessage();
+            }
+        } else {
+            // Fallback case
+            textDisplayDiv.textContent = "Error: No data available for display.";
+            submitButton.disabled = true;
+            submitButton.classList.add('hidden');
+            alertDiv.classList.add('hidden');
+            doneDiv.classList.add('hidden');
+            audioStatusMessage.textContent = "No data available";
+            audioStatusMessage.style.color = "red";
+        }
+    }
+
+    // Function to advance to the next audio text
+    function nextAudio() {
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+        }
+
+        if (currentTexts && currentTexts.length > 0) {
+            currentIndex++;
+            console.log(`Advancing to index ${currentIndex} for ${selectedLanguage}`);
+            if (currentIndex < currentTexts.length) {
+                displayText(); // Display new text and audio
+                submitButton.disabled = false;
+                submitButton.classList.remove('hidden');
+                submitButton.textContent = 'Submit';
+            } else {
+                showCompletionMessage();
+            }
+        } else {
+            console.log("Cannot advance: No current texts available.");
+        }
+    }
+
+    // Function to show completion message
+    function showCompletionMessage() {
+        console.log(`All texts completed for ${selectedLanguage}`);
+        textDisplayDiv.classList.add('hidden');
+        submitButton.classList.add('hidden');
+        alertDiv.classList.add('hidden');
+        audioPlayer.pause();
+        audioPlayer.src = '';
+        audioPlayer.load();
+        audioStatusMessage.textContent = "All recordings completed for this language";
+        audioStatusMessage.style.color = "green";
+        doneDiv.classList.remove('hidden');
+    }
+
+    // Function to reset the form and state
+    function resetForm() {
+        userInfoForm.reset();
+        countrySelect.value = "";
+        currentTexts = [];
+        currentIndex = 0;
+        selectedLanguage = null;
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+        }
+        audioPlayer.src = '';
+        audioPlayer.load();
+        audioStatusMessage.textContent = "Select a language to load reference audio";
+        audioStatusMessage.style.color = "#777";
+        updateForLanguageSelection();
+        console.log("Form and state reset");
+    }
+
+    // --- Event Listeners ---
+    countrySelect.addEventListener('change', updateForLanguageSelection);
+    resetButton.addEventListener('click', resetForm);
+
+    // --- Initialization ---
+    countrySelect.disabled = true;
+    document.addEventListener('DOMContentLoaded', loadData);
+
+    // --- Recorder Integration (Submit Button) ---
+    submitButton.addEventListener('click', () => {
+        // Validation (Keep existing validation logic)
+        const userId = document.getElementById('userId').value;
+        const userName = document.getElementById('userName').value;
+        const userGender = document.getElementById('userGender').value;
+        const userAge = document.getElementById('userAge').value;
+        const proficiencyLevel = document.getElementById('proficiencyLevel').value;
+        const nativeLanguage = document.getElementById('nativeLanguage').value;
+
+        if (!userId || !userName || !userGender || !userAge || !proficiencyLevel || !nativeLanguage || !selectedLanguage) {
+            alert("Please ensure all user information fields (ID, Name, Gender, Age, Proficiency, Native Language) and language selection are complete before submitting.");
+            // Focus logic (Keep existing focus logic)
+            if (!userId) document.getElementById('userId').focus();
+            else if (!userName) document.getElementById('userName').focus();
+            else if (!userGender) document.getElementById('userGender').focus();
+            else if (!userAge) document.getElementById('userAge').focus();
+            else if (!proficiencyLevel) document.getElementById('proficiencyLevel').focus();
+            else if (!nativeLanguage) document.getElementById('nativeLanguage').focus();
+            else if (!selectedLanguage) document.getElementById('userCountry').focus();
+            return;
+        }
+
+        // Pause reference audio if playing
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+            console.log("Paused reference audio before submitting.");
+        }
+
+        // Call sendAudio (Keep existing logic)
+        if (typeof sendAudio === 'function') {
+             console.log("Calling sendAudio function...");
+             sendAudio(nextAudio); // Pass nextAudio as the success callback
+        } else {
+             console.error("sendAudio function not found or not defined. Check new1.js integration.");
+             alert("Submit function is not available. Please check the console.");
+             // Placeholder call (Keep existing placeholder logic if needed for testing)
+             placeholderSendAudio(nextAudio);
+        }
+    });
+
+    // --- Placeholder sendAudio function (if needed for testing without new1.js) ---
+    function placeholderSendAudio(successCallback) { // Renamed to avoid potential conflicts
+        console.log("Placeholder sendAudio called");
+
+        // 1. Get the recorded audio data (e.g., a Blob)
+        // This part is CRITICAL and depends entirely on how recorder.js/new1.js store the recording.
+        // You need to replace this with the actual call to get the blob.
+        let theAudioBlob = null;
+        try {
+            // Example: Assuming 'recorder' is your global Recorder instance from recorder.js
+            // if (window.recorder && typeof window.recorder.exportWAV === 'function') {
+            //     window.recorder.exportWAV(function(blob) { // exportWAV is async!
+            //         theAudioBlob = blob;
+            //         console.log("Got blob from recorder instance (placeholder)");
+            //         // Proceed with sending *inside* the callback
+            //         proceedWithSending(theAudioBlob, successCallback);
+            //     });
+            //     return; // Exit now, proceedWithSending will be called by the callback
+            // } else {
+            //     console.error("Recorder instance or exportWAV method not found.");
+            //     alert("Could not retrieve recorded audio.");
+            //     submitButton.disabled = false; // Re-enable button
+            //     submitButton.textContent = 'Submit';
+            //     return; // Stop if blob cannot be obtained
+            // }
+             console.warn("Placeholder: Simulating audio blob retrieval.");
+             theAudioBlob = new Blob(["fake audio data " + Date.now()], { type: 'audio/wav' }); // Fake blob for testing flow
+             proceedWithSending(theAudioBlob, successCallback); // Call the sending logic directly for simulation
+
+        } catch (error) {
+            console.error("Error getting audio blob:", error);
+            alert("An error occurred while preparing the audio for sending.");
+            submitButton.disabled = false; // Re-enable button
+            submitButton.textContent = 'Submit';
+            return;
+        }
+    }
+
+    // Helper function to continue after potentially async blob retrieval
+    function proceedWithSending(theAudioBlob, successCallback) {
+        if (!theAudioBlob) {
+             console.error("No audio blob to send.");
+             alert("No recorded audio data found to submit!");
+             submitButton.disabled = false;
+             submitButton.textContent = 'Submit';
+             return;
+        }
+
+        // 2. Get user info (already validated)
+        const userInfo = {
+            userId: document.getElementById('userId').value,
+            userName: document.getElementById('userName').value,
+            userGender: document.getElementById('userGender').value,
+            userAge: document.getElementById('userAge').value,
+            proficiencyLevel: document.getElementById('proficiencyLevel').value,
+            nativeLanguage: document.getElementById('nativeLanguage').value,
+            recordingLanguage: selectedLanguage,
+        };
+
+        // 3. Get the details of the text that was just recorded
+        const textInfo = {
+            language: textDisplayDiv.dataset.language,
+            sentenceUid: textDisplayDiv.dataset.sentenceuid,
+            text: textDisplayDiv.textContent,
+            originalAudioUid: textDisplayDiv.dataset.audiouid,
+            originalAudioS3Uri: textDisplayDiv.dataset.audios3uri
+        };
+
+        console.log("User Info:", userInfo);
+        console.log("Recorded Text Info:", textInfo);
+        console.log("Audio Blob Info:", { size: theAudioBlob.size, type: theAudioBlob.type }); // Log blob info
+
+        // 4. Construct FormData
+        const formData = new FormData();
+        const filename = `rec_${userInfo.userId}_${textInfo.language}_${textInfo.sentenceUid}_${Date.now()}.wav`;
+        formData.append('audio_blob', theAudioBlob, filename);
+        formData.append('userInfo', JSON.stringify(userInfo));
+        formData.append('textInfo', JSON.stringify(textInfo));
+
+        console.log("FormData prepared (Placeholder - not sending)");
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        // 5. Simulate sending the data (replace with actual fetch/XHR)
+        console.log("Simulating network request...");
+        setTimeout(() => {
+            const simulateSuccess = true; // <-- CHANGE TO false TO TEST FAILURE
+
+            if (simulateSuccess) {
+                console.log('Placeholder: Upload successful simulated.');
+                if (typeof successCallback === 'function') {
+                    successCallback(); // Calls nextAudio()
+                } else {
+                    console.error("Success callback (nextAudio) is not a function!");
+                    submitButton.disabled = false; // Manually reset button
+                    submitButton.textContent = 'Submit';
+                }
+            } else {
+                console.error('Placeholder: Upload failed simulated.');
+                alert('Upload failed (simulation). Please try again.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit';
+            }
+        }, 1500);
+    } // End proceedWithSending
+
+     // Make the placeholder globally available ONLY if the real one isn't loaded
+    if (typeof window.sendAudio === 'undefined') {
+         console.warn("`sendAudio` not found globally. Defining `placeholderSendAudio`. Ensure new1.js loads correctly or defines `sendAudio` globally.");
+         window.sendAudio = placeholderSendAudio; // Assign placeholder if real one isn't there
+    }
+
+
+</script>
+
+</body>
+</html>

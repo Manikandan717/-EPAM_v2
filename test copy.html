@@ -1,0 +1,499 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sentence Viewer</title>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <style>
+        /* Styles from previous version, adjusted */
+        .hidden { display: none !important; }
+        #title { font-size: 14px; color: #777; }
+        #texttorec { border: 1px solid #cccccc; padding: 20px; font-size: 26px; margin-top: 10px; margin-bottom: 10px; border-radius: 5px; min-height: 100px; }
+        #submitRecording { float: right; }
+        #alert {
+            border-color: #c3e6cb; /* Adjusted color for general info */
+            background-color: #d4edda;
+            color: #155724;
+            line-height: 1.6;
+        }
+        #done { font-size: 30px; line-height: 150px; text-align: center; color: #444; margin-top: 20px; }
+        #audioPlayback { width: 100%; }
+        #audioPlaybackContainer { width: 100%; margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #ddd; }
+        #audioStatusMessage { color: #777; font-size: 14px; margin-top: 5px; text-align: center; }
+    </style>
+
+</head>
+<body>
+    <!-- Modal (keep as is for status messages) -->
+    <div id="mymodal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Processing...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main role="main">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Left Column: User Info (keep as is) -->
+                <div class="col-lg-3 col-md-4 ctrlpanel vh-100 overflow-auto pe-2 pb-2 border-end">
+                     <h5>Please complete your info:</h5>
+                    <form id="userInfoForm">
+                        <div class="form-group mb-2">
+                            <label for="userId">Speaker Id</label>
+                            <input type="text" class="form-control" id="userId" placeholder="Enter your speaker id" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userName">Name</label>
+                            <input type="text" class="form-control" id="userName" placeholder="Enter your name" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userGender">Gender</label>
+                            <select class="form-control" id="userGender" required>
+                                <option value="">Select Gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userAge">Age</label>
+                            <input type="number" class="form-control" id="userAge" placeholder="Enter your age" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="proficiencyLevel">Proficiency Level</label>
+                            <select class="form-control" id="proficiencyLevel" required>
+                                <option disabled selected value="">Select proficiency level</option>
+                                <option value="A1 (Beginner)">A1 (Beginner)</option>
+                                <option value="A2 (Elementary)">A2 (Elementary)</option>
+                                <option value="B1 (Intermediate)">B1 (Intermediate)</option>
+                                <option value="B2 (Upper Intermediate)">B2 (Upper Intermediate)</option>
+                                <option value="C1 (Advanced)">C1 (Advanced)</option>
+                                <option value="C2 (Proficient)">C2 (Proficient)</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="nativeLanguage">Native Language</label>
+                            <input type="text" class="form-control" id="nativeLanguage" placeholder="Enter your native language" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="userCountry">Language/Locale</label>
+                            <select class="form-control" id="userCountry" required>
+                                <option value="">Select a language/locale</option>
+                                <option value="en-US">en-US (US English)</option>
+                                <option value="en-UK">en-UK (UK English)</option>
+                                <option value="ru-RU">ru-RU (Russian)</option>
+                                <option value="hr-HR">hr-HR (Croatian)</option>
+                                <option value="sr-XK">sr-XK (Serbian - Kosovo)</option>
+                                <option value="sq-AL">sq-AL (Albanian - Albania)</option>
+                                <option value="cs-CZ">cs-CZ (Czech)</option>
+                                <option value="sq-XK">sq-XK (Albanian - Kosovo)</option>
+                                <option value="hu-HU">hu-HU (Hungarian)</option>
+                                <option value="uk-UA">uk-UA (Ukrainian)</option>
+                                <option value="sk-SK">sk-SK (Slovak - Slovakia)</option>
+                                <option value="hr-BA">hr-BA (Croatian - Bosnia)</option>
+                                <option value="de-AT">de-AT (German - Austria)</option>
+                                <option value="de-DE">de-DE (German - Germany)</option>
+                                <option value="ro-RO">ro-RO (Romanian)</option>
+                                <option value="sr-RS">sr-RS (Serbian - Serbia)</option>
+                                <option value="sr-BA">sr-BA (Serbian - Bosnia)</option>
+                                <option value="sl-SI">sl-SI (Slovenian)</option>
+                                <option value="sq-ME">sq-ME (Albanian - Montenegro)</option>
+                                <option value="bs-BA">bs-BA (Bosnian - Bosnia)</option>
+                                <option value="bs-ME">bs-ME (Bosnian - Montenegro)</option>
+                                <option value="pl-PL">pl-PL (Polish)</option>
+                            </select>
+                        </div>
+                    </form>
+                    <button id="clearAllData" class="btn btn-danger mt-2">Reset Form</button>
+                </div>
+
+                <!-- Right Column: Display Area -->
+                <div class="col-lg-9 col-md-8 imgdisplay pt-3">
+                    <div id="title"></div>
+                    <div id="subtitle"></div>
+
+                    <!-- Text display area -->
+                    <div id="texttorec">Kindly select language/locale first</div>
+
+                    <!-- Reference Audio Player Container -->
+                    <div id="audioPlaybackContainer"> <!-- Initially visible -->
+                        <audio id="audioPlayback" controls></audio>
+                        <div id="audioStatusMessage">Select a language to load reference audio</div>
+                    </div>
+
+                    <!-- Completion Message -->
+                    <div id="done" class="hidden">Thank you! All sentences for this language reviewed.</div>
+
+                    <!-- Submit/Next Button -->
+                    <div class="mt-3">
+                        <button id="submitRecording" type="button" class="btn btn-info hidden">Submit / Next</button>
+                    </div>
+                    <br>
+                    <br>
+                    <!-- Instructions Alert -->
+                     <div class="alert mt-3 p-3 position-relative hidden" role="alert" id="alert"> <!-- Start hidden -->
+                        <div class="d-flex align-items-start">
+                          <div>
+                            <h6 class="fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle me-2 mb-1" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.064.293.006.399.287.47l.45.082.082-.38-.29-.07a.25.25 0 0 1-.288-.469l.738-3.468a.25.25 0 0 1 .288-.469l.29.07.082.38zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                  </svg> Instructions
+                            </h6>
+                            <div class="mb-0 px-3">
+                                Please review the text and listen to the reference audio (if available).<br>
+                                Fill in your information accurately.<br>
+                                Click "Submit / Next" to proceed to the next sentence.<br>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // --- Global variables for UI state ---
+    let allData = [];
+    let currentTexts = [];
+    let currentIndex = 0;
+    let selectedLanguage = null;
+
+    // --- DOM Elements ---
+    const countrySelect = document.getElementById('userCountry');
+    const textDisplayDiv = document.getElementById('texttorec');
+    const submitButton = document.getElementById('submitRecording');
+    const doneDiv = document.getElementById('done');
+    const alertDiv = document.getElementById('alert');
+    const userInfoForm = document.getElementById('userInfoForm');
+    const resetButton = document.getElementById('clearAllData');
+    const audioPlayer = document.getElementById('audioPlayback');
+    const audioStatusMessage = document.getElementById('audioStatusMessage');
+    const audioPlaybackContainer = document.getElementById('audioPlaybackContainer'); // Reference needed
+    const titleDiv = document.getElementById('title');
+
+    // --- Functions ---
+
+    async function loadData() {
+        try {
+            const response = await fetch('data.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            allData = await response.json();
+            console.log("Data loaded successfully:", allData.length, "items total");
+            if (!Array.isArray(allData)) {
+                throw new Error("JSON data is not in the expected array format.");
+            }
+            countrySelect.disabled = false;
+            updateForLanguageSelection();
+        } catch (error) {
+            console.error("Could not load or parse data.json:", error);
+            textDisplayDiv.textContent = "Error loading sentence data. Please check the data.json file path and format in the developer console.";
+            countrySelect.disabled = true;
+            audioPlaybackContainer.classList.add('hidden'); // Hide audio container on error
+            audioStatusMessage.textContent = "Error loading data.";
+            audioStatusMessage.style.color = "red";
+            alertDiv.classList.add('hidden');
+            submitButton.classList.add('hidden');
+        }
+    }
+
+    function updateForLanguageSelection() {
+        selectedLanguage = countrySelect.value;
+        currentIndex = 0;
+        currentTexts = [];
+
+        audioPlayer.pause();
+        audioPlayer.src = '';
+        audioPlayer.load();
+        // Reset status message for audio container
+        audioStatusMessage.textContent = "Select a language to load reference audio";
+        audioStatusMessage.style.color = "#777";
+
+
+        if (selectedLanguage && Array.isArray(allData)) {
+            currentTexts = allData.filter(item => item.language === selectedLanguage);
+            console.log(`Filtered ${currentTexts.length} items for language: ${selectedLanguage}`);
+        }
+
+        // Reset UI elements visibility
+        titleDiv.textContent = '';
+        textDisplayDiv.classList.remove('hidden');
+        submitButton.classList.add('hidden');
+        doneDiv.classList.add('hidden');
+        alertDiv.classList.add('hidden');
+        audioPlaybackContainer.classList.add('hidden'); // Hide initially, displayText will show it
+
+        if (currentTexts.length > 0) {
+            displayText(); // Display the first text (will make audio container visible)
+        } else {
+            submitButton.classList.add('hidden');
+             audioPlaybackContainer.classList.add('hidden'); // Ensure it stays hidden if no texts
+            if (!selectedLanguage) {
+                textDisplayDiv.textContent = "Kindly select language/locale first";
+                 audioPlaybackContainer.classList.remove('hidden'); // Show container with default message if no lang selected
+            } else {
+                textDisplayDiv.textContent = `No sentences found for ${selectedLanguage}. Check data.json or select another language.`;
+                showCompletionMessage(); // Show "done" message if language selected but no texts found
+            }
+        }
+    }
+
+    function displayText() {
+        audioPlayer.pause();
+        audioPlayer.removeAttribute('src');
+        audioPlayer.load();
+        audioStatusMessage.textContent = "Loading reference audio...";
+        audioStatusMessage.style.color = "#777";
+        audioPlaybackContainer.classList.remove('hidden'); // *** Make container visible ***
+
+        if (currentTexts && currentTexts.length > 0 && currentIndex < currentTexts.length) {
+            const currentTextData = currentTexts[currentIndex];
+            textDisplayDiv.textContent = currentTextData.text;
+
+            textDisplayDiv.dataset.language = currentTextData.language || '';
+            textDisplayDiv.dataset.sentenceuid = currentTextData.sentenceUid || '';
+            textDisplayDiv.dataset.audios3uri = currentTextData.audioS3Uri || '';
+
+            titleDiv.textContent = `Sentence ${currentIndex + 1} of ${currentTexts.length}`;
+            console.log(`Displaying text ${currentIndex + 1}/${currentTexts.length} for ${selectedLanguage}: "${currentTextData.text}" (SentenceUID: ${currentTextData.sentenceUid})`);
+
+            const audioPath = currentTextData.audioS3Uri;
+            if (audioPath && audioPath.trim() !== '') {
+                const fullAudioPath = audioPath.trim();
+                console.log(`Attempting to load reference audio from: ${fullAudioPath}`);
+                audioPlayer.src = fullAudioPath;
+                audioPlayer.load();
+
+                audioPlayer.onloadedmetadata = () => {
+                    console.log(`Audio metadata loaded for: ${fullAudioPath}. Duration: ${audioPlayer.duration}`);
+                    audioStatusMessage.textContent = `Reference audio loaded (${Math.round(audioPlayer.duration)}s)`;
+                    audioStatusMessage.style.color = "green";
+                };
+                audioPlayer.onerror = (e) => {
+                    console.error(`Error loading audio source: ${fullAudioPath}`, e);
+                    if (audioPlayer.error) {
+                        console.error(`Audio Element Error Code: ${audioPlayer.error.code}, Message: ${audioPlayer.error.message}`);
+                    }
+                    audioStatusMessage.textContent = `Error loading reference audio. Path: ${fullAudioPath}`;
+                    audioStatusMessage.style.color = "red";
+                };
+            } else {
+                console.log("No valid audioS3Uri found for this item.");
+                audioStatusMessage.textContent = "No reference audio available for this sentence";
+                audioStatusMessage.style.color = "#777";
+            }
+
+            textDisplayDiv.classList.remove('hidden');
+            submitButton.classList.remove('hidden');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit / Next';
+            alertDiv.classList.remove('hidden');
+            doneDiv.classList.add('hidden');
+
+        } else {
+             if (currentIndex >= currentTexts.length && currentTexts.length > 0) {
+                 showCompletionMessage();
+             } else {
+                 console.error("displayText called in an invalid state.");
+                 updateForLanguageSelection();
+             }
+        }
+    }
+
+    function nextAudio() {
+        console.log("nextAudio: Advancing to the next item.");
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+        }
+
+        if (currentTexts && currentTexts.length > 0) {
+            currentIndex++;
+            console.log(`Advancing to index ${currentIndex} for ${selectedLanguage}`);
+
+            if (currentIndex < currentTexts.length) {
+                displayText();
+            } else {
+                showCompletionMessage(); // All items done
+            }
+        } else {
+            console.log("Cannot advance: No current texts available.");
+            updateForLanguageSelection();
+        }
+    }
+
+    function showCompletionMessage() {
+        console.log(`All texts completed for ${selectedLanguage}`);
+        textDisplayDiv.classList.add('hidden');
+        submitButton.classList.add('hidden');
+        alertDiv.classList.add('hidden');
+        doneDiv.classList.remove('hidden');
+        titleDiv.textContent = '';
+
+        // Reset and HIDE the audio player container
+        audioPlayer.pause();
+        audioPlayer.src = '';
+        audioPlayer.load();
+        audioPlaybackContainer.classList.add('hidden'); // *** Hide the container ***
+        // No need to update status message if container is hidden
+        // audioStatusMessage.textContent = "All sentences reviewed for this language";
+        // audioStatusMessage.style.color = "green";
+    }
+
+    function resetForm() {
+        userInfoForm.reset();
+        countrySelect.value = "";
+        currentTexts = [];
+        currentIndex = 0;
+        selectedLanguage = null;
+
+        if (!audioPlayer.paused) audioPlayer.pause();
+        audioPlayer.src = '';
+        audioPlayer.load();
+        audioStatusMessage.textContent = "Select a language to load reference audio"; // Reset message
+        audioStatusMessage.style.color = "#777";
+        audioPlaybackContainer.classList.remove('hidden'); // *** Make container visible again ***
+
+        titleDiv.textContent = '';
+        textDisplayDiv.textContent = "Kindly select language/locale first";
+        textDisplayDiv.classList.remove('hidden');
+        submitButton.classList.add('hidden');
+        doneDiv.classList.add('hidden');
+        alertDiv.classList.add('hidden');
+
+        console.log("Form and state reset");
+    }
+
+
+    function sendMetadata(successCallback) {
+        console.log("sendMetadata called");
+
+        // 1. Get User Info
+        const name = $('#userName').val()?.trim();
+        const speakerid = $('#userId').val()?.trim();
+        const gender = $('#userGender').val()?.trim();
+        const ageInput = $('#userAge').val();
+        const age = ageInput ? parseInt(ageInput, 10) : null;
+        const selectedLanguage = $('#userCountry').val()?.trim();
+        const proficiency = $('#proficiencyLevel').val()?.trim();
+        const nativeLang = $('#nativeLanguage').val()?.trim();
+
+        // 2. Get Sentence Info
+        const textDisplayDiv = document.getElementById('texttorec');
+        const currentSentenceUid = textDisplayDiv ? textDisplayDiv.dataset.sentenceuid : null;
+        const currentText = textDisplayDiv ? textDisplayDiv.textContent : null;
+
+        // 3. --- VALIDATION ---
+         if (!speakerid || !name || !gender || !age || isNaN(age) || age <= 0 || age > 120 || !selectedLanguage || !proficiency || !nativeLang || !currentSentenceUid) {
+            console.error("Validation Failed:", { speakerid, name, gender, age, selectedLanguage, proficiency, nativeLang, currentSentenceUid });
+            alert('Please ensure all user information fields (ID, Name, Gender, Age, Proficiency, Native Language) and language selection are complete.');
+            $('#submitRecording').prop('disabled', false).text('Submit / Next');
+            return;
+        }
+        // --- End Validation ---
+
+        // 4. Determine Age Range
+        let ageRange;
+        if (age < 18) ageRange = 'A';
+        else if (age >= 18 && age <= 24) ageRange = 'B';
+        else if (age >= 25 && age <= 29) ageRange = 'C';
+        else if (age >= 30 && age <= 35) ageRange = 'D';
+        else if (age >= 36 && age <= 39) ageRange = 'E';
+        else if (age >= 40 && age <= 45) ageRange = 'F';
+        else if (age >= 46 && age <= 49) ageRange = 'G';
+        else if (age >= 50 && age <= 55) ageRange = 'H';
+        else if (age > 55) ageRange = 'I';
+        else ageRange = 'J';
+
+        // 5. Prepare Payload (NO audio data)
+        const payload = {
+            speakerId: speakerid, format_Id: speakerid, name: name, gender: gender,
+            age: ageRange, jsonCountry: selectedLanguage, country: selectedLanguage,
+            proficiency: proficiency, nativeLanguage: nativeLang, id: currentSentenceUid,
+            sentenceUid: currentSentenceUid,
+            voiceCode: speakerid + '-' + selectedLanguage.substring(0, 2).toUpperCase() + '-' + gender.charAt(0).toUpperCase(),
+            speed: selectedLanguage, text: currentText
+        };
+
+        console.log("Submitting Metadata Payload (NO AUDIO):", JSON.stringify(payload, null, 2));
+
+        // 6. Show Loading/Modal
+        $('#mymodal .modal-body').html('<div class="spinner-border text-secondary spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submitting data...');
+        $('#mymodal .modal-footer').hide();
+        $('#mymodal .modal-header').show();
+        $('#mymodal').modal({ backdrop: 'static', keyboard: false });
+
+        // 7. Perform AJAX POST Request
+        $.post('https://service.tensoract.com/audio_EPAM', payload)
+            .done(function(res) {
+                console.log('Submission response:', res);
+                $('#mymodal').modal('hide');
+                // Decide how to handle server response when no audio is sent
+                if (res && res.status) { // Assuming server *might* still return success
+                    console.log('Metadata submission apparently successful.');
+                    if (typeof successCallback === 'function') successCallback();
+                } else {
+                    console.warn('Metadata submission potentially failed or was ignored:', res ? res.message : 'No message');
+                    // Proceed anyway for UI demo purposes
+                    console.log("Proceeding to next item despite non-true server status (for demo).");
+                    if (typeof successCallback === 'function') successCallback();
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX Error:', textStatus, errorThrown, jqXHR.responseText);
+                $('#mymodal').modal('hide');
+                alert('Network or server error occurred. Please check connection and try again. Details: ' + textStatus);
+                $('#submitRecording').prop('disabled', false).text('Submit / Next'); // Re-enable on failure
+            });
+    }
+
+
+    // --- Event Listeners ---
+    countrySelect.addEventListener('change', updateForLanguageSelection);
+    resetButton.addEventListener('click', resetForm);
+
+    submitButton.addEventListener('click', () => {
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+        }
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+        sendMetadata(nextAudio);
+    });
+
+
+    // --- Initialization ---
+    countrySelect.disabled = true;
+    alertDiv.classList.add('hidden');
+    audioPlaybackContainer.classList.add('hidden'); // Start with audio container hidden until language selected
+    document.addEventListener('DOMContentLoaded', loadData);
+
+</script>
+
+</body>
+</html>

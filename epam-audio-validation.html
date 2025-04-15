@@ -1,0 +1,574 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sentence Viewer & Rater</title>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+    <!-- Font Awesome needed for the icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <style>
+        /* General Styles */
+        .hidden { display: none !important; }
+        #title { font-size: 14px; color: #777; }
+        #texttorec { border: 1px solid #cccccc; padding: 10px; font-size: 21px; margin-top: 10px; margin-bottom: 10px; border-radius: 5px;  }
+        #submitRecording { float: right; }
+        #alert { border-color: #c3e6cb; background-color: #d4edda; color: #155724; line-height: 1.6; }
+        #done { font-size: 30px; line-height: 150px; text-align: center; color: #444; margin-top: 20px; }
+
+        /* Audio Player */
+        #audioPlayback { width: 100%; }
+        #audioPlaybackContainer { width: 100%; margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #ddd; }
+        #audioStatusMessage { color: #777; font-size: 14px; margin-top: 5px; text-align: center; }
+
+        /* Evaluation Area */
+        #evaluationArea {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+        }
+
+        /* Rating Section (Left Column) */
+        #ratingSection .form-group.row {
+             margin-bottom: 0.5rem;
+        }
+        #ratingSection label.rating-label {
+             font-weight: bold;
+             font-size: 0.9em;
+             padding-top: calc(.275rem + 1px);
+        }
+
+        /* Evaluation ID & Comment Section (Right Column) */
+        #evaluationUidSection p {
+             margin-bottom: 0.5rem;
+        }
+        #evaluationUidSection code {
+             background-color: #e9ecef; padding: 0.2em 0.4em; border-radius: 3px; font-size: 90%;
+             word-break: break-all;
+         }
+        #commentSection label {
+             font-weight: bold;
+             font-size: 0.9em;
+        }
+        /* Style for Instruction Modal Body */
+        #instructionModal .modal-body ul {
+            padding-left: 20px; /* Indent bullet points */
+        }
+         #instructionModal .modal-body li {
+            margin-bottom: 0.5rem; /* Space between list items */
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Status Modal -->
+    <div id="mymodal" class="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Processing...</p>
+                </div>
+                <div class="modal-footer" style="display: none;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ****** NEW: Instruction Modal ****** -->
+    <div id="instructionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="instructionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="instructionModalLabel">Instructions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>1.Please review the text and listen to the reference audio (if available).</p>
+                    <p>2.Fill in your information accurately in the left panel.</p>
+                    <p>3.For each sentence displayed:</p>
+                    <ul>
+                        <li>Rate the sentence/audio on all four scales (Overall Quality, Naturalness, Clarity, Intonation) using the dropdowns (1=Very poor, 5=Excellent).</li>
+                        <li>Optionally, add any comments in the text box.</li>
+                    </ul>
+                    <p>4.Click "Submit / Next" to proceed to the next sentence.</p>
+                    <p>5.An Evaluation ID is generated automatically for tracking purposes.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ****** END: Instruction Modal ****** -->
+
+
+    <main role="main">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Left Column: User Info -->
+                <div class="col-lg-3 col-md-4 ctrlpanel vh-100 overflow-auto pe-2 pb-2 border-end">
+                    
+
+                     <!-- Instruction Button -->
+                     <button type="button" class="btn btn-sm btn-outline-info mb-2 mt-2" data-toggle="modal" data-target="#instructionModal">
+                         <i class="fa fa-info-circle" aria-hidden="true"></i> View Instructions
+                     </button>
+                     <h6>Please complete your info:</h6>
+                    <form id="userInfoForm">
+                        <div class="form-group mb-2"><label for="userId">Speaker Id</label><input type="text" class="form-control" id="userId" placeholder="Enter your speaker id" required></div>
+                        <div class="form-group mb-2"><label for="userName">Name</label><input type="text" class="form-control" id="userName" placeholder="Enter your name" required></div>
+                        <!-- <div class="form-group mb-2"><label for="userGender">Gender</label><select class="form-control" id="userGender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div> -->
+                        <!-- <div class="form-group mb-2"><label for="userAge">Age</label><input type="number" class="form-control" id="userAge" placeholder="Enter your age" required></div> -->
+                        <div class="form-group mb-2 hidden"><label for="proficiencyLevel">Proficiency Level</label><select class="form-control" id="proficiencyLevel"><option disabled selected value="">Select proficiency level</option><option value="A1 (Beginner)">A1 (Beginner)</option><option value="A2 (Elementary)">A2 (Elementary)</option><option value="B1 (Intermediate)">B1 (Intermediate)</option><option value="B2 (Upper Intermediate)">B2 (Upper Intermediate)</option><option value="C1 (Advanced)">C1 (Advanced)</option><option value="C2 (Proficient)">C2 (Proficient)</option></select></div>
+                        <div class="form-group mb-2 hidden"><label for="nativeLanguage">Native Language</label><input type="text" class="form-control" id="nativeLanguage" placeholder="Enter your native language"></div>
+                        <div class="form-group mb-2"><label for="userCountry">Language/Locale</label><select class="form-control" id="userCountry" required>
+                            <option value="">Select a language/locale</option>
+                            <option value="en-US">en-US (US English)</option><option value="en-UK">en-UK (UK English)</option><option value="ru-RU">ru-RU (Russian)</option><option value="hr-HR">hr-HR (Croatian)</option><option value="sr-XK">sr-XK (Serbian - Kosovo)</option><option value="sq-AL">sq-AL (Albanian - Albania)</option><option value="cs-CZ">cs-CZ (Czech)</option><option value="sq-XK">sq-XK (Albanian - Kosovo)</option><option value="hu-HU">hu-HU (Hungarian)</option><option value="uk-UA">uk-UA (Ukrainian)</option><option value="sk-SK">sk-SK (Slovak - Slovakia)</option><option value="hr-BA">hr-BA (Croatian - Bosnia)</option><option value="de-AT">de-AT (German - Austria)</option><option value="de-DE">de-DE (German - Germany)</option><option value="ro-RO">ro-RO (Romanian)</option><option value="sr-RS">sr-RS (Serbian - Serbia)</option><option value="sr-BA">sr-BA (Serbian - Bosnia)</option><option value="sl-SI">sl-SI (Slovenian)</option><option value="sq-ME">sq-ME (Albanian - Montenegro)</option><option value="bs-BA">bs-BA (Bosnian - Bosnia)</option><option value="bs-ME">bs-ME (Bosnian - Montenegro)</option><option value="pl-PL">pl-PL (Polish)</option>
+                        </select></div>
+                    </form>
+                    <button id="clearAllData" class="btn btn-danger mt-2">Reset Form</button>
+                </div>
+
+                <!-- Right Column: Display Area -->
+                <div class="col-lg-9 col-md-8 imgdisplay pt-1">
+                    <div id="title"></div>
+                    <div id="subtitle"></div>
+                    <div id="texttorec">Kindly select language/locale first</div>
+                    <div id="audioPlaybackContainer" class="hidden">
+                        <audio id="audioPlayback" controls></audio>
+                        <div id="audioStatusMessage">Select a language to load reference audio</div>
+                    </div>
+
+                    <!-- Parent Container for 2-Column Layout -->
+                    <div id="evaluationArea" class="hidden">
+                        <div class="row">
+
+                            <!-- Left Column: Ratings -->
+                            <div class="col-md-6">
+                                <div id="ratingSection">
+                                    <h5 class="mb-3">Rate the audio speech based on the following criteria</h5>
+                                    <div class="form-group row mb-2"><label for="overallQualitySelect" class="col-sm-4 col-md-3 col-form-label rating-label">Overall Quality:</label><div class="col-sm-8 col-md-9"><select class="form-control form-control-sm" id="overallQualitySelect" name="overallQualityRating" required><option value="" disabled selected>Select (1-5)</option><option value="1 (Very poor)">1 (Very poor)</option> <option value="2 (poor)">2 (poor)</option> <option value="3 (Average)">3 (Average)</option> <option value="4 (Good)">4 (Good)</option> <option value="5">5 (Excellent)</option></select></div></div>
+                                    <div class="form-group row mb-2"><label for="naturalnessSelect" class="col-sm-4 col-md-3 col-form-label rating-label">Naturalness:</label><div class="col-sm-8 col-md-9"><select class="form-control form-control-sm" id="naturalnessSelect" name="naturalnessRating" required><option value="" disabled selected>Select (1-5)</option><option value="1 (Very poor)">1 (Very poor)</option> <option value="2 (poor)">2 (poor)</option> <option value="3 (Average)">3 (Average)</option> <option value="4 (Good)">4 (Good)</option> <option value="5">5 (Excellent)</option></select></div></div>
+                                    <div class="form-group row mb-2"><label for="claritySelect" class="col-sm-4 col-md-3 col-form-label rating-label">Clarity:</label><div class="col-sm-8 col-md-9"><select class="form-control form-control-sm" id="claritySelect" name="clarityRating" required><option value="" disabled selected>Select (1-5)</option><option value="1 (Very poor)">1 (Very poor)</option> <option value="2 (poor)">2 (poor)</option> <option value="3 (Average)">3 (Average)</option> <option value="4 (Good)">4 (Good)</option> <option value="5">5 (Excellent)</option></select></div></div>
+                                    <div class="form-group row mb-2"><label for="intonationSelect" class="col-sm-4 col-md-3 col-form-label rating-label">Intonation:</label><div class="col-sm-8 col-md-9"><select class="form-control form-control-sm" id="intonationSelect" name="intonationRating" required><option value="" disabled selected>Select (1-5)</option><option value="1 (Very poor)">1 (Very poor)</option> <option value="2 (poor)">2 (poor)</option> <option value="3 (Average)">3 (Average)</option> <option value="4 (Good)">4 (Good)</option> <option value="5">5 (Excellent)</option></select></div></div>
+                                </div>
+                            </div><!-- End Left Column -->
+
+                            <!-- Right Column: Eval ID & Comment -->
+                            <div class="col-md-6">
+                                <div id="evaluationUidSection" class="mb-3"><p><strong>Evaluation ID:</strong> <code id="evaluationUidDisplay" data-current-eval-uid=""></code></p></div>
+                                <div id="commentSection" class="form-group"><label for="commentInput">Comment (Optional):</label><textarea class="form-control" id="commentInput" name="comment" rows="4" placeholder="Enter any comments..."></textarea></div>
+                            </div><!-- End Right Column -->
+
+                        </div><!-- End Row -->
+                    </div><!-- END: evaluationArea -->
+
+                    <!-- Completion Message -->
+                    <div id="done" class="hidden">Thank you! All sentences for this language reviewed.</div>
+
+                    <!-- Submit/Next Button -->
+                    <div class="mt-3"><button id="submitRecording" type="button" class="btn btn-info hidden">Submit / Next</button></div>
+                    <br><br>
+                     <!-- Instructions Alert (Still useful for context) -->
+                     <!-- <div class="alert mt-3 p-3 position-relative hidden" role="alert" id="alert"> -->
+                        <div class=" hidden" role="alert" id="alert">
+                         <!-- <div class="d-flex align-items-start"><div><h6 class="fw-semibold"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle me-2 mb-1" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.064.293.006.399.287.47l.45.082.082-.38-.29-.07a.25.25 0 0 1-.288-.469l.738-3.468a.25.25 0 0 1 .288-.469l.29.07.082.38zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg> Instructions</h6><div class="mb-0 px-3">Please review the text and listen to the reference audio (if available).<br>Fill in your information accurately.<br><b class="text-danger">Rate the sentence/audio on all four scales.</b><br>Enter any comments if needed.<br>Click "Submit / Next" to proceed.</div></div></div> -->
+                     </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // --- Global variables ---
+    let allData = [];
+    let currentTexts = [];
+    let currentIndex = 0;
+    let selectedLanguage = null;
+    const AUDIO_BASE_URL = "https://objectways-audio.s3.us-east-1.amazonaws.com/Audio-QC"; 
+    // --- DOM Elements ---
+    const countrySelect = document.getElementById('userCountry');
+    const textDisplayDiv = document.getElementById('texttorec');
+    const submitButton = document.getElementById('submitRecording');
+    const doneDiv = document.getElementById('done');
+    const alertDiv = document.getElementById('alert');
+    const userInfoForm = document.getElementById('userInfoForm');
+    const resetButton = document.getElementById('clearAllData');
+    const audioPlayer = document.getElementById('audioPlayback');
+    const audioStatusMessage = document.getElementById('audioStatusMessage');
+    const audioPlaybackContainer = document.getElementById('audioPlaybackContainer');
+    const titleDiv = document.getElementById('title');
+    const ratingSection = document.getElementById('ratingSection');
+    const overallQualitySelect = document.getElementById('overallQualitySelect');
+    const naturalnessSelect = document.getElementById('naturalnessSelect');
+    const claritySelect = document.getElementById('claritySelect');
+    const intonationSelect = document.getElementById('intonationSelect');
+    const evaluationUidSection = document.getElementById('evaluationUidSection');
+    const evaluationUidDisplay = document.getElementById('evaluationUidDisplay');
+    const commentSection = document.getElementById('commentSection');
+    const commentInput = document.getElementById('commentInput');
+    const myModalElement = document.getElementById('mymodal');
+    const myModalBody = myModalElement.querySelector('.modal-body');
+    const myModalFooter = myModalElement.querySelector('.modal-footer');
+    const myModalHeader = myModalElement.querySelector('.modal-header');
+    const evaluationArea = document.getElementById('evaluationArea'); // Parent container
+
+    // --- Helper Functions ---
+    function generateEvaluationUid() {
+        const hexChars = '0123456789abcdef';
+        let result = '';
+        for (let i = 0; i < 32; i++) {
+            result += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
+        }
+        console.log("Generated Evaluation UID:", result);
+        return result;
+    }
+
+    function clearRatings() {
+        if (overallQualitySelect) overallQualitySelect.selectedIndex = 0;
+        if (naturalnessSelect) naturalnessSelect.selectedIndex = 0;
+        if (claritySelect) claritySelect.selectedIndex = 0;
+        if (intonationSelect) intonationSelect.selectedIndex = 0;
+    }
+
+    // --- Main Functions ---
+    async function loadData() {
+        try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            allData = await response.json();
+            if (!Array.isArray(allData)) throw new Error("JSON data is not an array.");
+            console.log("Data loaded:", allData.length, "items");
+            countrySelect.disabled = false;
+            updateForLanguageSelection();
+        } catch (error) {
+            console.error("Load data error:", error);
+            textDisplayDiv.textContent = "Error loading sentence data. Check console and data.json path.";
+            countrySelect.disabled = true;
+            audioPlaybackContainer.classList.add('hidden');
+            evaluationArea.classList.add('hidden');
+            alertDiv.classList.add('hidden');
+            submitButton.classList.add('hidden');
+        }
+    }
+
+    function updateForLanguageSelection() {
+        selectedLanguage = countrySelect.value;
+        currentIndex = 0;
+        currentTexts = [];
+
+        audioPlayer.pause(); audioPlayer.src = ''; audioPlayer.load();
+        audioStatusMessage.textContent = "Select a language to load reference audio";
+        audioStatusMessage.style.color = "#777";
+
+        if (selectedLanguage && Array.isArray(allData)) {
+            currentTexts = allData.filter(item => item.language === selectedLanguage);
+            console.log(`Filtered ${currentTexts.length} items for ${selectedLanguage}`);
+        }
+
+        titleDiv.textContent = '';
+        textDisplayDiv.classList.remove('hidden');
+        submitButton.classList.add('hidden');
+        doneDiv.classList.add('hidden');
+        alertDiv.classList.add('hidden');
+        audioPlaybackContainer.classList.add('hidden');
+        evaluationArea.classList.add('hidden');
+        clearRatings();
+        if(commentInput) commentInput.value = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.textContent = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = '';
+
+        if (currentTexts.length > 0) {
+            displayText();
+        } else {
+            if (!selectedLanguage) {
+                textDisplayDiv.textContent = "Kindly select language/locale first";
+                audioPlaybackContainer.classList.remove('hidden');
+            } else {
+                textDisplayDiv.textContent = `No sentences found for ${selectedLanguage}.`;
+                showCompletionMessage();
+            }
+        }
+    }
+
+    // function displayText() {
+    //     audioPlayer.pause(); audioPlayer.removeAttribute('src'); audioPlayer.load();
+    //     audioStatusMessage.textContent = "Loading reference audio...";
+    //     audioStatusMessage.style.color = "#777";
+    //     audioPlaybackContainer.classList.remove('hidden');
+    //     evaluationArea.classList.remove('hidden');
+    //     clearRatings();
+    //     if(commentInput) commentInput.value = '';
+
+    //     const newEvalUid = generateEvaluationUid();
+    //     if(evaluationUidDisplay) evaluationUidDisplay.textContent = newEvalUid;
+    //     if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = newEvalUid;
+
+    //     if (currentTexts && currentTexts.length > 0 && currentIndex < currentTexts.length) {
+    //         const currentTextData = currentTexts[currentIndex];
+    //         textDisplayDiv.textContent = currentTextData.text;
+
+    //         textDisplayDiv.dataset.language = currentTextData.language || '';
+    //         textDisplayDiv.dataset.sentenceuid = currentTextData.sentenceUid || '';
+    //         textDisplayDiv.dataset.audios3uri = currentTextData.audioS3Uri || '';
+    //         textDisplayDiv.dataset.audiouid = currentTextData.audioUid || '';
+
+    //         titleDiv.textContent = `Sentence ${currentIndex + 1} of ${currentTexts.length}`;
+    //         console.log(`Displaying text ${currentIndex + 1}/${currentTexts.length}, EvalUID: ${newEvalUid}`);
+
+    //         const audioPath = currentTextData.audioS3Uri;
+    //         if (audioPath && audioPath.trim() !== '') {
+    //             const fullAudioPath = audioPath.trim();
+    //             audioPlayer.src = fullAudioPath;
+    //             audioPlayer.load();
+    //             audioPlayer.onloadedmetadata = () => { audioStatusMessage.textContent = `Reference audio loaded (${Math.round(audioPlayer.duration)}s)`; audioStatusMessage.style.color = "green"; };
+    //             audioPlayer.onerror = () => { audioStatusMessage.textContent = `Error loading reference audio.`; audioStatusMessage.style.color = "red"; };
+    //         } else {
+    //             audioStatusMessage.textContent = "No reference audio available.";
+    //             audioStatusMessage.style.color = "#777";
+    //         }
+
+    //         textDisplayDiv.classList.remove('hidden');
+    //         submitButton.classList.remove('hidden');
+    //         submitButton.disabled = false;
+    //         submitButton.textContent = 'Submit / Next';
+    //         alertDiv.classList.remove('hidden'); // Show the contextual alert
+    //         doneDiv.classList.add('hidden');
+
+    //     } else {
+    //          if (currentIndex >= currentTexts.length && currentTexts.length > 0) { showCompletionMessage(); }
+    //          else { console.error("displayText invalid state."); updateForLanguageSelection(); }
+    //     }
+    // }
+    function displayText() {
+        audioPlayer.pause(); audioPlayer.removeAttribute('src'); audioPlayer.load();
+        audioStatusMessage.textContent = "Loading reference audio...";
+        audioStatusMessage.style.color = "#777";
+        audioPlaybackContainer.classList.remove('hidden');
+        evaluationArea.classList.remove('hidden');
+        clearRatings();
+        if(commentInput) commentInput.value = '';
+
+        const newEvalUid = generateEvaluationUid();
+        if(evaluationUidDisplay) evaluationUidDisplay.textContent = newEvalUid;
+        if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = newEvalUid;
+
+        if (currentTexts && currentTexts.length > 0 && currentIndex < currentTexts.length) {
+            const currentTextData = currentTexts[currentIndex];
+            textDisplayDiv.textContent = currentTextData.text;
+
+            textDisplayDiv.dataset.language = currentTextData.language || '';
+            textDisplayDiv.dataset.sentenceuid = currentTextData.sentenceUid || '';
+            textDisplayDiv.dataset.audios3uri = currentTextData.audioS3Uri || ''; // Store relative path
+            textDisplayDiv.dataset.audiouid = currentTextData.audioUid || '';
+
+            titleDiv.textContent = `Sentence ${currentIndex + 1} of ${currentTexts.length}`;
+            console.log(`Displaying text ${currentIndex + 1}/${currentTexts.length}, EvalUID: ${newEvalUid}`);
+
+            // *** UPDATED AUDIO PATH HANDLING ***
+            const relativeAudioPath = currentTextData.audioS3Uri; // Get relative path from JSON
+
+            if (relativeAudioPath && relativeAudioPath.trim() !== '') {
+                // Construct the full URL
+                const fullAudioPath = AUDIO_BASE_URL + relativeAudioPath.trim();
+                console.log(`Attempting to load reference audio from: ${fullAudioPath}`); // Log the full URL
+
+                audioPlayer.src = fullAudioPath; // Use the full URL
+                audioPlayer.load();
+
+                audioPlayer.onloadedmetadata = () => {
+                    console.log(`Audio metadata loaded for: ${fullAudioPath}. Duration: ${audioPlayer.duration}`);
+                    audioStatusMessage.textContent = `Reference audio loaded (${Math.round(audioPlayer.duration)}s)`;
+                    audioStatusMessage.style.color = "green";
+                };
+                audioPlayer.onerror = (e) => {
+                    console.error(`Error loading audio source: ${fullAudioPath}`, e);
+                    if (audioPlayer.error) {
+                         console.error(`Audio Element Error Code: ${audioPlayer.error.code}, Message: ${audioPlayer.error.message}`);
+                    }
+                    audioStatusMessage.textContent = `Error loading reference audio.`; // Keep error message generic
+                    audioStatusMessage.style.color = "red";
+                };
+            } else {
+                console.log("No relative audioS3Uri found for this item.");
+                audioStatusMessage.textContent = "No reference audio available.";
+                audioStatusMessage.style.color = "#777";
+            }
+            // *** END UPDATED AUDIO PATH HANDLING ***
+
+            textDisplayDiv.classList.remove('hidden');
+            submitButton.classList.remove('hidden');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit / Next';
+            alertDiv.classList.remove('hidden');
+            doneDiv.classList.add('hidden');
+
+        } else {
+             if (currentIndex >= currentTexts.length && currentTexts.length > 0) { showCompletionMessage(); }
+             else { console.error("displayText invalid state."); updateForLanguageSelection(); }
+        }
+    }
+    function nextAudio() {
+        console.log("Advancing to next item."); if (!audioPlayer.paused) audioPlayer.pause();
+        if (currentTexts && currentTexts.length > 0) {
+            currentIndex++; if (currentIndex < currentTexts.length) { displayText(); } else { showCompletionMessage(); }
+        } else { updateForLanguageSelection(); }
+    }
+
+    function showCompletionMessage() {
+        console.log(`All texts completed for ${selectedLanguage}`);
+        textDisplayDiv.classList.add('hidden'); submitButton.classList.add('hidden'); alertDiv.classList.add('hidden');
+        doneDiv.classList.remove('hidden'); titleDiv.textContent = ''; audioPlaybackContainer.classList.add('hidden');
+        evaluationArea.classList.add('hidden');
+        clearRatings();
+        if(commentInput) commentInput.value = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.textContent = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = '';
+    }
+
+    function resetForm() {
+         userInfoForm.reset(); countrySelect.value = ""; currentTexts = []; currentIndex = 0; selectedLanguage = null;
+        if (!audioPlayer.paused) audioPlayer.pause(); audioPlayer.src = ''; audioPlayer.load();
+        audioStatusMessage.textContent = "Select a language to load reference audio"; audioStatusMessage.style.color = "#777";
+        audioPlaybackContainer.classList.remove('hidden'); titleDiv.textContent = ''; textDisplayDiv.textContent = "Kindly select language/locale first";
+        textDisplayDiv.dataset.language = ''; textDisplayDiv.dataset.sentenceuid = ''; textDisplayDiv.dataset.audios3uri = ''; textDisplayDiv.dataset.audiouid = '';
+        textDisplayDiv.classList.remove('hidden'); submitButton.classList.add('hidden'); doneDiv.classList.add('hidden'); alertDiv.classList.add('hidden');
+        evaluationArea.classList.add('hidden');
+        clearRatings();
+        if(commentInput) commentInput.value = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.textContent = '';
+        if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = '';
+        console.log("Form and state reset");
+    }
+
+
+    function sendMetadata(successCallback) {
+        console.log("sendMetadata called");
+
+        // 1. Get User Info & 2. Get Sentence Info
+        const name = $('#userName').val()?.trim(); const speakerid = $('#userId').val()?.trim(); 
+         const selectedLanguage = $('#userCountry').val()?.trim();
+        const currentSentenceUid = textDisplayDiv ? textDisplayDiv.dataset.sentenceuid : null; const currentAudioUid = textDisplayDiv ? textDisplayDiv.dataset.audiouid : null;
+        const currentAudioS3Uri = textDisplayDiv ? textDisplayDiv.dataset.audios3uri : null; const currentText = textDisplayDiv ? textDisplayDiv.textContent : null;
+
+        // 3. Get Ratings from Dropdowns
+        const overallQualityValue = overallQualitySelect.value; const naturalnessValue = naturalnessSelect.value;
+        const clarityValue = claritySelect.value; const intonationValue = intonationSelect.value;
+
+        // 4. Get Evaluation UID and Comment
+        const currentEvaluationUid = evaluationUidDisplay ? evaluationUidDisplay.dataset.currentEvalUid : null;
+        const commentText = commentInput ? commentInput.value.trim() : '';
+
+        // 5. --- VALIDATION ---
+        let missingFields = [];
+        if (!speakerid) missingFields.push("Speaker ID"); if (!name) missingFields.push("Name"); 
+         if (!selectedLanguage) missingFields.push("Language/Locale");
+        if (!currentSentenceUid) missingFields.push("Sentence UID"); if (!currentAudioUid) missingFields.push("Audio UID");
+        if (!currentEvaluationUid) missingFields.push("Evaluation UID");
+        if (!overallQualityValue) missingFields.push("Overall Quality rating"); if (!naturalnessValue) missingFields.push("Naturalness rating");
+        if (!clarityValue) missingFields.push("Clarity rating"); if (!intonationValue) missingFields.push("Intonation rating");
+
+        if (missingFields.length > 0) {
+            console.error("Validation Failed. Missing:", missingFields.join(', '));
+            alert('Please ensure all user information fields are complete AND select a rating (1-5) for each category:\n- ' + missingFields.join('\n- '));
+            $('#submitRecording').prop('disabled', false).text('Submit / Next'); return;
+        }
+        // --- End Validation ---
+
+        // 6. Determine Age Range
+        let ageRange;
+        if (age < 18) ageRange = 'A'; else if (age <= 24) ageRange = 'B'; else if (age <= 29) ageRange = 'C'; else if (age <= 35) ageRange = 'D';
+        else if (age <= 39) ageRange = 'E'; else if (age <= 45) ageRange = 'F'; else if (age <= 49) ageRange = 'G'; else if (age <= 55) ageRange = 'H';
+        else if (age > 55) ageRange = 'I'; else ageRange = 'J';
+
+        // 7. Prepare Payload
+        const payload = {
+            speakerId: speakerid, format_Id: speakerid, name: name,  jsonCountry: selectedLanguage, country: selectedLanguage,
+            id: currentSentenceUid, sentenceUid: currentSentenceUid, text: currentText, audioUid: currentAudioUid, audioS3Uri: currentAudioS3Uri,
+            voiceCode: speakerid + '-' + selectedLanguage.substring(0, 2).toUpperCase() + '-' + gender.charAt(0).toUpperCase(), speed: selectedLanguage,
+            overallQuality: overallQualityValue, naturalness: naturalnessValue, clarity: clarityValue, intonation: intonationValue,
+            evaluationUid: currentEvaluationUid, comment: commentText
+        };
+        // console.log("Submitting Payload:", JSON.stringify(payload, null, 2));
+
+        // 8. Show Loading/Modal
+        if(myModalBody) myModalBody.innerHTML = '<div class="spinner-border text-secondary spinner-border-sm" role="status" aria-hidden="true"></div> Submitting data...';
+        if(myModalFooter) myModalFooter.style.display = 'none';
+        if (myModalHeader) myModalHeader.style.display = '';
+        $(myModalElement).modal({ backdrop: 'static', keyboard: false });
+
+        // 9. Perform AJAX POST Request
+        // $.post('https://service.tensoract.com/audio_EPAM', payload)
+        $.post('http://54.87.91.147:8080/audio_EPAM', payload)
+            .done(function(res) {
+                console.log('AJAX .done() reached.');
+                $(myModalElement).modal('hide');
+                console.log('Modal hide command sent in .done()');
+                setTimeout(() => {
+                    console.log('Processing response after modal hide.');
+                    console.log('Submission response:', res);
+                    if (res && res.status) {
+                        console.log('Submission status indicates success.');
+                        if (typeof successCallback === 'function') successCallback();
+                    } else {
+                        console.warn('Submission potentially failed or was ignored:', res ? res.message : 'No message');
+                        console.log("Proceeding to next item (for demo).");
+                         if (typeof successCallback === 'function') successCallback();
+                    }
+                }, 100);
+
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.log('AJAX .fail() reached.');
+                console.error('AJAX Error:', textStatus, errorThrown, jqXHR.responseText);
+                $(myModalElement).modal('hide');
+                 console.log('Modal hide command sent in .fail()');
+                 setTimeout(() => {
+                    alert('Network or server error occurred while submitting data. Please check connection and try again. Details: ' + textStatus);
+                    $('#submitRecording').prop('disabled', false).text('Submit / Next');
+                 }, 100);
+            });
+    }
+
+
+    // --- Event Listeners ---
+    countrySelect.addEventListener('change', updateForLanguageSelection);
+    resetButton.addEventListener('click', resetForm);
+    submitButton.addEventListener('click', () => {
+        if (!audioPlayer.paused) audioPlayer.pause();
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+        sendMetadata(nextAudio);
+    });
+
+
+    // --- Initialization ---
+    countrySelect.disabled = true;
+    alertDiv.classList.add('hidden');
+    audioPlaybackContainer.classList.add('hidden');
+    evaluationArea.classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', loadData);
+
+</script>
+
+</body>
+</html>
