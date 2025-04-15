@@ -27,605 +27,605 @@ function migrateData(inputData) {
   // Example input data from the provided sample
   const inputData = [
     {
-    "sentenceUid": "b68d9db616b6025844b097d48fc800a7",
-    "text": "Mogu li vidjeti neobrađene uplate?",
-    "language": "hr-BA",
-    "englishText": "Can I view pending deposits?"
-  },
-  {
-    "sentenceUid": "b8ec5eb6c336ddce392be1c12aa13c66",
-    "text": "Kako mogu uraditi reprogram kredita?",
-    "language": "hr-BA",
-    "englishText": "How can I refinance my loan?"
-  },
-  {
-    "sentenceUid": "d5667352509fb4fecc7dd31cb5b7210f",
-    "text": "Potrebna mi je pomoć oko prenosa novca?",
-    "language": "hr-BA",
-    "englishText": "I need help with my transfer."
-  },
-  {
-    "sentenceUid": "70ad926cfa7ac739c8f3544b32d11950",
-    "text": "Koliko imam štednje na računu?",
-    "language": "hr-BA",
-    "englishText": "How much do I have in my savings account?"
-  },
-  {
-    "sentenceUid": "ff57d5a6c7c000b94ef8ea69d94fed7c",
-    "text": "Aktiviraj Apple Pay za moju Visa karticu.",
-    "language": "hr-BA",
-    "englishText": "Activate Apple Pay for my Visa card."
-  },
-  {
-    "sentenceUid": "d27597ce52610643000d422dc141b240",
-    "text": "Mogu li ažurirati svoja sigurnosna pitanja?",
-    "language": "hr-BA",
-    "englishText": "Can I update my security questions?"
-  },
-  {
-    "sentenceUid": "5b40278b7759abc6b95e6227ae1908c3",
-    "text": "Kako omogućiti mobilna obavještenja za transakcije?",
-    "language": "hr-BA",
-    "englishText": "How do I enable mobile alerts for transactions?"
-  },
-  {
-    "sentenceUid": "1b1e80685136c31dac30cb1b79f67c05",
-    "text": "Koji je moj IBAN?",
-    "language": "hr-BA",
-    "englishText": "What is my IBAN?"
-  },
-  {
-    "sentenceUid": "bb5a20019c2068bc808b17fe8e6d4afe",
-    "text": "Šta treba od dokumentacije za zahtjev za kredit?",
-    "language": "hr-BA",
-    "englishText": "What documents do I need to apply for a loan?"
-  },
-  {
-    "sentenceUid": "3634e9161a570edf7aab3eb8bf0d360b",
-    "text": "Koliko je stanje na mojem računu 15. sječnja 2023?",
-    "language": "hr-BA",
-    "englishText": "What was my account balance on January 15, 2023?"
-  },
-  {
-    "sentenceUid": "84389e0cd8686fcea09f87b5b33052ea",
-    "text": "Kako mogu tražiti novi karticu?",
-    "language": "hr-BA",
-    "englishText": "How can I request a new card?"
-  },
-  {
-    "sentenceUid": "c37963efb304474fe34054aadb8e0659",
-    "text": "Mogu li predati zahtjev za kredit online?",
-    "language": "hr-BA",
-    "englishText": "Can I apply for a personal loan online?"
-  },
-  {
-    "sentenceUid": "167b176898e45feb5c819c0198b8a57f",
-    "text": "Omogućite dvofaktorsku autentifikaciju?",
-    "language": "hr-BA",
-    "englishText": "Enable two-factor authentication."
-  },
-  {
-    "sentenceUid": "19e5ddcadd9b0c40aeab7f005dc56bdc",
-    "text": "Koliki je moj povrat ulaganja?",
-    "language": "hr-BA",
-    "englishText": "What are my investment returns?"
-  },
-  {
-    "sentenceUid": "ce89d21f1d3696244a6bc447f49f401a",
-    "text": "Mogu li promijeniti rok kredita?",
-    "language": "hr-BA",
-    "englishText": "Can I change my loan term?"
-  },
-  {
-    "sentenceUid": "f711fa497c9d052e998da1bb62466359",
-    "text": "Koji je maksimalni iznos prenosa novca koji mogu uraditi?",
-    "language": "hr-BA",
-    "englishText": "What is the maximum transfer limit?"
-  },
-  {
-    "sentenceUid": "ca50a2601925e06f563370066c5e6202",
-    "text": "Koji plan štednje je najbolji za mene?",
-    "language": "hr-BA",
-    "englishText": "What is the best savings plan for me?"
-  },
-  {
-    "sentenceUid": "6d60b9597d995d4010ca88d328ea754e",
-    "text": "Možete li danas prebaciti 500KM s mog tekućeg računa na štedni račun?",
-    "language": "hr-BA",
-    "englishText": "Can you transfer €500 from my checking account to my savings account today?"
-  },
-  {
-    "sentenceUid": "a19e1e65dd7b99591a6b2e34e554708f",
-    "text": "Šta je nadolazeće za plaćanje?",
-    "language": "hr-BA",
-    "englishText": "Show me my upcoming scheduled payments."
-  },
-  {
-    "sentenceUid": "aa4d0d7dc825cdbfd15deef3cc177a95",
-    "text": "Mogu li zakazati sastanak s financijskim savjetnikom?",
-    "language": "hr-BA",
-    "englishText": "Can I schedule a meeting with a financial advisor?"
-  },
-  {
-    "sentenceUid": "80687d21cdb599244cf47e68dd685ed2",
-    "text": "Mogu li zatražiti privremeni porast limita kreditne kartice?",
-    "language": "hr-BA",
-    "englishText": "Can I request a temporary increase in my credit limit?"
-  },
-  {
-    "sentenceUid": "7f86558abf7f22126d87d66911e0a2cc",
-    "text": "Mogu li otvoriti novi račun za štednju?",
-    "language": "hr-BA",
-    "englishText": "Can I open a new savings account?"
-  },
-  {
-    "sentenceUid": "eb5b065852cb5d0e4a015bacc60bef4f",
-    "text": "Kako postaviti sigurnosne alarme?",
-    "language": "hr-BA",
-    "englishText": "How can I set up security alerts?"
-  },
-  {
-    "sentenceUid": "efb71f61245260bbbefa319b569a3633",
-    "text": "Trajnim nalogom plaćaj stanarinu.",
-    "language": "hr-BA",
-    "englishText": "Set up a standing order for my rent."
-  },
-  {
-    "sentenceUid": "04e9a99b0604564aec8375c6bcd813b6",
-    "text": "Kako zaustaviti ponavljajuće plaćanje?",
-    "language": "hr-BA",
-    "englishText": "How do I stop a recurring payment?"
-  },
-  {
-    "sentenceUid": "244b7a248935f4099a2e8214d21dad1c",
-    "text": "Mogu li promjeniti naziv računa?",
-    "language": "hr-BA",
-    "englishText": "Can I rename my accounts?"
-  },
-  {
-    "sentenceUid": "ece0e6dffcc7f0836e00ee76907365dd",
-    "text": "Mogu li izvršiti dodatnu uplatu rate kredita?",
-    "language": "hr-BA",
-    "englishText": "Can I make an extra payment on my loan?"
-  },
-  {
-    "sentenceUid": "394c5b57c52b0f9aaf8a44fe6cb0dd2a",
-    "text": "Molimo Vas da zakažete plaćanje računa od 400KM mojem stanodavcu na adresu Hercegovačka 123, Mostar, Bosna i Hercegovina, studeni 2023. godine.",
-    "language": "hr-BA",
-    "englishText": "Please schedule a bill payment of £200 to my landlord at Hauptstr. 123, Berlin, on November 5, 2023."
-  },
-  {
-    "sentenceUid": "6f16b3280ceaa2d68ca45b8f8a4463ed",
-    "text": "Koliko mogu pozajmiti?",
-    "language": "hr-BA",
-    "englishText": "How much can I borrow?"
-  },
-  {
-    "sentenceUid": "1189ef4fdefa9b7a121c98291207bde4",
-    "text": "Kada mi je kreditirana posljednja plaća?",
-    "language": "hr-BA",
-    "englishText": "When was my last salary credited?"
-  },
-  {
-    "sentenceUid": "ab3dcf0ed8efd019c1dbc2eae26a46f0",
-    "text": "Kolika je kamatna stopa mog kredita?",
-    "language": "hr-BA",
-    "englishText": "What is the interest rate on my loan?"
-  },
-  {
-    "sentenceUid": "a9ce470e30afe9c58a7523ae20e899cc",
-    "text": "Kako se mogu prijaviti za elektronskeizvode?",
-    "language": "hr-BA",
-    "englishText": "How do I enroll in paperless statements?"
-  },
-  {
-    "sentenceUid": "8d83f534c5ce8d91f785d141e2cd8b13",
-    "text": "Kako da ažuriram moje kontaktne podatke?",
-    "language": "hr-BA",
-    "englishText": "How do I update my contact information?"
-  },
-  {
-    "sentenceUid": "b13f15d71cfba47b1607f9e566ce3153",
-    "text": "Kako da postavim na svom računu limit potrošnje?",
-    "language": "hr-BA",
-    "englishText": "How do I set a spending limit on my account?"
-  },
-  {
-    "sentenceUid": "2561bc0a4bafebece7880abd3e30c528",
-    "text": "Mogu li karticom plaćati u inozemstvu?",
-    "language": "hr-BA",
-    "englishText": "Is my card enabled for international payments?"
-  },
-  {
-    "sentenceUid": "eabaa9a583830394c53495a5f53fdc88",
-    "text": "Kako promjeniti email adresu za moj račun?",
-    "language": "hr-BA",
-    "englishText": "How do I change my account's primary email address?"
-  },
-  {
-    "sentenceUid": "8e5a6c2feae695fb5d2fef9a21129114",
-    "text": "Pokažite mi moje nedavne transakcije?",
-    "language": "hr-BA",
-    "englishText": "Show me my recent card transactions."
-  },
-  {
-    "sentenceUid": "bcdb070a6302b29484186b6dec8dd91b",
-    "text": "Koliko sam potrošio na namirnice prošlog mjeseca?",
-    "language": "hr-BA",
-    "englishText": "How much did I spend on groceries last month?"
-  },
-  {
-    "sentenceUid": "72db77254754b7250a156f32073167d6",
-    "text": "Kako se može tražiti povrat novca?",
-    "language": "hr-BA",
-    "englishText": "What cashback offers do I have?"
-  },
-  {
-    "sentenceUid": "13ebf7fb2e5466c1e29d20f5095a712c",
-    "text": "Mogu li automatizovari mjesečnu štednju?",
-    "language": "hr-BA",
-    "englishText": "Can I automate monthly savings?"
-  },
-  {
-    "sentenceUid": "4aea8fecf7bd1c7f65aa81225e151725",
-    "text": "Blokirajte moju kreditnu karticu.",
-    "language": "hr-BA",
-    "englishText": "Block my credit card."
-  },
-  {
-    "sentenceUid": "fc72bb2c06904680139e00843f711b1d",
-    "text": "Mogu li vidjeti pokušaje prijave?",
-    "language": "hr-BA",
-    "englishText": "Can I see login attempts?"
-  },
-  {
-    "sentenceUid": "45932f2a27ce9b9127a103085578057b",
-    "text": "Možete li mi poslati izvode sa računa od lipnja 2022. do rujna 2022. na moju email adresu?",
-    "language": "hr-BA",
-    "englishText": "Can you send me my bank statements from June 2022 to September 2022 to my email address?"
-  },
-  {
-    "sentenceUid": "19f4f4c7a6be070d995eaa4f5056d576",
-    "text": "Možete li me savjetovati kako da uštedim više novca?",
-    "language": "hr-BA",
-    "englishText": "Can you suggest ways to save more money?"
-  },
-  {
-    "sentenceUid": "b9efc984aabbcccdabb13510c9964bdd",
-    "text": "Postoje li sumnjive aktivnosti na mojemu računu?",
-    "language": "hr-BA",
-    "englishText": "Are there any suspicious activities on my account?"
-  },
-  {
-    "sentenceUid": "8a66050c9e938b240b7f7d5803cd945b",
-    "text": "Mogu li promijeniti PIN kartice?",
-    "language": "hr-BA",
-    "englishText": "Can I change my card PIN?"
-  },
-  {
-    "sentenceUid": "34018debb73ef46e414b49361f346b64",
-    "text": "Mogu li naručiti novu čekovnu knjižicu?",
-    "language": "hr-BA",
-    "englishText": "Can I order a new checkbook?"
-  },
-  {
-    "sentenceUid": "373fe0fd222acaec6a3d79819be2f700",
-    "text": "Kako obaviti plaćanje u realnom vremenu?",
-    "language": "hr-BA",
-    "englishText": "How do I make a real-time payment?"
-  },
-  {
-    "sentenceUid": "e9d3f2dda2cbd4d5c763fdc57b413e12",
-    "text": "Možete li izlistati moje račune?",
-    "language": "hr-BA",
-    "englishText": "Can you list all my accounts?"
-  },
-  {
-    "sentenceUid": "0c34bbfafed4d814b02f3a31920c0e7d",
-    "text": "Mogu li dobiti kopiju izvještaja za moj kredit?",
-    "language": "hr-BA",
-    "englishText": "Can I get a copy of my credit report?"
-  },
-  {
-    "sentenceUid": "80caa4fcc2bd740969b671a77dad000b",
-    "text": "Koje su naknade za transakcije stranih valuta?",
-    "language": "hr-BA",
-    "englishText": "What are the fees for foreign transactions?"
-  },
-  {
-    "sentenceUid": "3ba54a12efabacb4fea7470dd3efb664",
-    "text": "Do kada radi banka?",
-    "language": "hr-BA",
-    "englishText": "What are the bank’s working hours?"
-  },
-  {
-    "sentenceUid": "89c9c1a981fd072a23a2e15d3bba5bad",
-    "text": "Kako mogu promjeniti adresu e-pošte koju koristim za račun?",
-    "language": "hr-BA",
-    "englishText": "How do I change my email used for account recovery?"
-  },
-  {
-    "sentenceUid": "62d8aabf3957a0c14f4dd169d278f51c",
-    "text": "Kolika je kamata za štednju?",
-    "language": "hr-BA",
-    "englishText": "What are the interest rates for savings accounts?"
-  },
-  {
-    "sentenceUid": "b69ae17d08534c7ac82f601a858000c4",
-    "text": "Kako mogu povećati limit na kartici?",
-    "language": "hr-BA",
-    "englishText": "Can I increase my card limit?"
-  },
-  {
-    "sentenceUid": "482574ee63ccc36e94c597d40447c2d8",
-    "text": "Kako postaviti direktno plaćanje?",
-    "language": "hr-BA",
-    "englishText": "How do I set up direct deposit?"
-  },
-  {
-    "sentenceUid": "b528585cf9388c8e7e1512a0d0b2828e",
-    "text": "Možete li mi dati detalje o transakciji od 150KM na adresi Primorska 15, Grude, 12. kolovoza 2023?",
-    "language": "hr-BA",
-    "englishText": "Can you give me the details of the $150 transaction at Linienstr. 106, Essen on August 12, 2023?"
-  },
-  {
-    "sentenceUid": "278cb0ff8c4d8425cf0bf0fa9f09a3c6",
-    "text": "Možete li mi dati informacije o vašim najnovijim ponudama?",
-    "language": "hr-BA",
-    "englishText": "Can you provide information on your latest offers?"
-  },
-  {
-    "sentenceUid": "feb00831fd469a7e04cc581e437cabf3",
-    "text": "Kako prijeći na isključivo online izvode?",
-    "language": "hr-BA",
-    "englishText": "How do I switch to online-only statements?"
-  },
-  {
-    "sentenceUid": "658910b1d3cd8645ab2ff9db5de48f9a",
-    "text": "Kako zatvoriti račun kreditne kartice?",
-    "language": "hr-BA",
-    "englishText": "How do I close a credit card account?"
-  },
-  {
-    "sentenceUid": "77cd9d93e6a973d6ecebe84f39a37ba2",
-    "text": "Koje prednosti imam sa kreditnom karticom na putovanju?",
-    "language": "hr-BA",
-    "englishText": "What travel benefits come with my credit card?"
-  },
-  {
-    "sentenceUid": "d747eaaee71472252ca6afcdeae4b587",
-    "text": "Kako deaktivirati uređaj?",
-    "language": "hr-BA",
-    "englishText": "How do I deactivate a device?"
-  },
-  {
-    "sentenceUid": "701570433ac8afe32402e4adfc21e58d",
-    "text": "Kad će mi sljedeći mjesec skinuti sa računa za Netflix?",
-    "language": "hr-BA",
-    "englishText": "When will my next direct debit for Netflix be deducted?"
-  },
-  {
-    "sentenceUid": "1861ed3939fd6a66fd6d173fc902680c",
-    "text": "Što da radim ako sumnjam na prevaru?",
-    "language": "hr-BA",
-    "englishText": "What should I do if I suspect fraud?"
-  },
-  {
-    "sentenceUid": "1eeaaa88c8e6dda2c7e01a69282ef68e",
-    "text": "Mogu li generirati virtualnu karticu?",
-    "language": "hr-BA",
-    "englishText": "Can I generate a virtual card?"
-  },
-  {
-    "sentenceUid": "8260d4d6a0c3bb8df47ee619bd35310a",
-    "text": "Kako mogu podnijeti zahtjev za hipoteku?",
-    "language": "hr-BA",
-    "englishText": "How do I apply for a mortgage?"
-  },
-  {
-    "sentenceUid": "d384760818458797f10aff731efcfb80",
-    "text": "Kako resetirati moju lozinku?",
-    "language": "hr-BA",
-    "englishText": "How can I reset my password?"
-  },
-  {
-    "sentenceUid": "bcce2cb6119bbbb0d2dc84b970e27bcc",
-    "text": "Pokaži mi mojih posljednjih deset transakcija.",
-    "language": "hr-BA",
-    "englishText": "Show me my last ten transactions."
-  },
-  {
-    "sentenceUid": "92c513340ba19ebd3beb3beff5f86abf",
-    "text": "Molim Vas da postavite redoviti prijenos od 1000KM na moj račun na adresi Trg Bana Jelačića, Široki Brijeg, prvog u svakom mjesecu.",
-    "language": "hr-BA",
-    "englishText": "Please set up a recurring transfer of 1000$ to my account at MusterPlatz 1, Dortmund, on the first of every month."
-  },
-  {
-    "sentenceUid": "6cbabd1b46935dabe004374f361e559f",
-    "text": "Šta će biti ako ne platim ratu na vrijeme?",
-    "language": "hr-BA",
-    "englishText": "What happens if I miss a payment?"
-  },
-  {
-    "sentenceUid": "7f9c9c946f259cd4debf91e91ee0d2d5",
-    "text": "Koliki je trenutačni tečaj KM u EUR od 1. listopada 2023",
-    "language": "hr-BA",
-    "englishText": "What is the current exchange rate from USD to EUR as of October 1, 2023?"
-  },
-  {
-    "sentenceUid": "c2850c3720c25482c83f171e7cfbef50",
-    "text": "Kako kontaktirati službu za korisnike?",
-    "language": "hr-BA",
-    "englishText": "How can I contact customer support?"
-  },
-  {
-    "sentenceUid": "9f7bb686f35e5e9a1f409ac290fef860",
-    "text": "Kako mogu promjeniti nadimak za moj račun?",
-    "language": "hr-BA",
-    "englishText": "How do I change my account's nickname?"
-  },
-  {
-    "sentenceUid": "e9b4e710773e503ca636fc2538c4c714",
-    "text": "Kako prijaviti izgubljenu karticu?",
-    "language": "hr-BA",
-    "englishText": "How do I report a lost card?"
-  },
-  {
-    "sentenceUid": "663f4ee41e714a3e994c9b0c7423c7f7",
-    "text": "Koliki jebio ukupni iznos naknada koje sam platio u posljednjem tromesečju 2022.?",
-    "language": "hr-BA",
-    "englishText": "What was the total amount of fees I paid in the last quarter of 2022?"
-  },
-  {
-    "sentenceUid": "f8e25303b5351dab757e19f89c17c636",
-    "text": "Mogu li prije vremena podići novac sa depozita?",
-    "language": "hr-BA",
-    "englishText": "Can I withdraw from my fixed deposit early?"
-  },
-  {
-    "sentenceUid": "3abde69777a1b184031a9d4726c692ba",
-    "text": "U kojoj fazi je moj zahtjev?",
-    "language": "hr-BA",
-    "englishText": "What is the status of my inquiry?"
-  },
-  {
-    "sentenceUid": "71931b80d03e43940518226e600e8c19",
-    "text": "Koji su uređaji povezani s mojim računom?",
-    "language": "hr-BA",
-    "englishText": "What devices are linked to my account?"
-  },
-  {
-    "sentenceUid": "578e35a999d27123d8d5bf579ab286c3",
-    "text": "Možete li mi dati bankovne podatke za međunarodni transfer na sljedeći IBAN BH89370400440532013000?",
-    "language": "hr-BA",
-    "englishText": "Could you provide me with the bank coordinates for an international transfer to the following IBAN: DE89370400440532013000?"
-  },
-  {
-    "sentenceUid": "16ef72bfd22370837cfba231db4e7ac7",
-    "text": "Koliko je raspoloživo na računu?",
-    "language": "hr-BA",
-    "englishText": "What is my available balance?"
-  },
-  {
-    "sentenceUid": "a22b3565c3f416978c1e05ca23b99515",
-    "text": "Kolika je sad stopa za 12-mjesečnu potvrdu o depozitu?",
-    "language": "hr-BA",
-    "englishText": "What is the current rate for a 12-month CD?"
-  },
-  {
-    "sentenceUid": "6d74091cda7febfc0a3c97d88ec4d034",
-    "text": "Koje pogodnosti imam sa mojom karticom?",
-    "language": "hr-BA",
-    "englishText": "What are the benefits of my card?"
-  },
-  {
-    "sentenceUid": "f6a52280ed76f705cea52d052461e518",
-    "text": "Pokažite mi moj akcionarni portfolio?",
-    "language": "hr-BA",
-    "englishText": "Show me my stock portfolio."
-  },
-  {
-    "sentenceUid": "2dd036d2d60e8b09dfc55e7166563210",
-    "text": "Da li mogu račun podijeliti sa prijateljima?",
-    "language": "hr-BA",
-    "englishText": "Can I split a bill with friends?"
-  },
-  {
-    "sentenceUid": "2b76f257aef70babcf357ce1929df8df",
-    "text": "Koliki je moj trenutni dug kredita?",
-    "language": "hr-BA",
-    "englishText": "What is my current loan balance?"
-  },
-  {
-    "sentenceUid": "fd8282b2cd51f395c0090774e2534600",
-    "text": "Mogu li dobiti ozvod od mog računa?",
-    "language": "hr-BA",
-    "englishText": "Can I download my bank statement?"
-  },
-  {
-    "sentenceUid": "c02837e17269353eb1557b039055fe29",
-    "text": "Koliko imam na računu?",
-    "language": "hr-BA",
-    "englishText": "What is my account balance?"
-  },
-  {
-    "sentenceUid": "7129f351e136c3fd6cb344f2e88be137",
-    "text": "Mogu li postaviti obavijesti za velike transakcije?",
-    "language": "hr-BA",
-    "englishText": "Can I set notifications for large transactions?"
-  },
-  {
-    "sentenceUid": "6d926aa7c68ec80b45f219460ffb39e4",
-    "text": "Kolika je kamatna stopa na tržištu?",
-    "language": "hr-BA",
-    "englishText": "What is the interest rate on a money market account?"
-  },
-  {
-    "sentenceUid": "51149befdaa61ea182a782c7bada2907",
-    "text": "Mogu li dobiti izvode za prošlu godinu?",
-    "language": "hr-BA",
-    "englishText": "Can I access my account statements from last year?"
-  },
-  {
-    "sentenceUid": "d1cc39a3409b264cc758246f7b1a9fcd",
-    "text": "Mogu li kreditom riješiti se dugova?",
-    "language": "hr-BA",
-    "englishText": "Can I get a loan to consolidate my debts?"
-  },
-  {
-    "sentenceUid": "d7c110461a1250ce9e0cbdbf6e5d030a",
-    "text": "Za koje kredite sam kreditno sposoban?",
-    "language": "hr-BA",
-    "englishText": "What loan options do I have?"
-  },
-  {
-    "sentenceUid": "bd47aea890f35c125bad129447553667",
-    "text": "Mogu li osporiti transakciju na mojoj kreditnoj kartici?",
-    "language": "hr-BA",
-    "englishText": "Can I dispute a charge on my credit card?"
-  },
-  {
-    "sentenceUid": "5c6d226aa087a5b93e5101cca588734a",
-    "text": "Kako mogu ulagati u ETF-ove?",
-    "language": "hr-BA",
-    "englishText": "How can I invest in ETFs?"
-  },
-  {
-    "sentenceUid": "69480e8b46563cf6c9a98695b08f49e6",
-    "text": "Kako podnijeti žalbu?",
-    "language": "hr-BA",
-    "englishText": "How do I file a complaint?"
-  },
-  {
-    "sentenceUid": "a475dc034586a2b3929faff4f8b6b909",
-    "text": "Koliki je minimum za ulagajne?",
-    "language": "hr-BA",
-    "englishText": "What is the minimum amount to invest?"
-  },
-  {
-    "sentenceUid": "b7e7dc23659c111388f2ff2f2c561f52",
-    "text": "Mogu li razgovarati s savjetnikom?",
-    "language": "hr-BA",
-    "englishText": "Can I chat with an advisor?"
-  },
-  {
-    "sentenceUid": "3c1fcc39bb4d1b7709e240aa3a643695",
-    "text": "Koliko sam potrošio sa kartice ovaj mjesec?",
-    "language": "hr-BA",
-    "englishText": "How much have I spent on my card this month?"
-  },
-  {
-    "sentenceUid": "7f33fc0f06b851c97373b8cfc9b30819",
-    "text": "Koliko je moja sljedeća rata kredita?",
-    "language": "hr-BA",
-    "englishText": "How much is my next loan installment?"
-  },
-  {
-    "sentenceUid": "4fafac823254f20fdf228b23178fd6e8",
-    "text": "Kako prijaviti problem s uslugom?",
-    "language": "hr-BA",
-    "englishText": "How do I report a service issue?"
-  }
+        "sentenceUid": "52fa27266aaeea3be92483500b43b759",
+        "text": "Koliko sam potrošio/la na prehrambene proizvode prošlog mjeseca?",
+        "language": "sr-ME",
+        "englishText": "How much did I spend on groceries last month?"
+      },
+      {
+        "sentenceUid": "287a8ecd700afa4c1a8b3aa565cfec66",
+        "text": "Kako da se prijavim za dobijanje elektronskih izvoda?",
+        "language": "sr-ME",
+        "englishText": "How do I enroll in paperless statements?"
+      },
+      {
+        "sentenceUid": "d57e78d0bdbc7a866532c1319a84648d",
+        "text": "Aktivirajte Apple Pay za moju Visa karticu.",
+        "language": "sr-ME",
+        "englishText": "Activate Apple Pay for my Visa card."
+      },
+      {
+        "sentenceUid": "50ce83ec256ff8d5a60360c5542412e0",
+        "text": "Prikažite mi moj portfolio akcija",
+        "language": "sr-ME",
+        "englishText": "Show me my stock portfolio."
+      },
+      {
+        "sentenceUid": "d921be6717edc703b8e77926289ce7a7",
+        "text": "Koliki je maksimalni iznos transfera koji mogu da obavim?",
+        "language": "sr-ME",
+        "englishText": "What is the maximum transfer limit?"
+      },
+      {
+        "sentenceUid": "c23441a96c2dd63e358fffbf026e24ac",
+        "text": "Koji dokumenti su potrebni za podnošenje zahtjeva za kredit?",
+        "language": "sr-ME",
+        "englishText": "What documents do I need to apply for a loan?"
+      },
+      {
+        "sentenceUid": "2bdeafa3d04dc08d05a3c82338f1125c",
+        "text": "Kako da podesim automatsku uplatu?",
+        "language": "sr-ME",
+        "englishText": "How do I set up direct deposit?"
+      },
+      {
+        "sentenceUid": "af430053f451d0c46ad0a0b839f3fdc5",
+        "text": "Koja je moja mjesečna potrošnja na kartici?",
+        "language": "sr-ME",
+        "englishText": "How much have I spent on my card this month?"
+      },
+      {
+        "sentenceUid": "122748cc03223ac9710d4ec12afb387c",
+        "text": "Uključite dvofaktorsku prijavu",
+        "language": "sr-ME",
+        "englishText": "Enable two-factor authentication."
+      },
+      {
+        "sentenceUid": "d2697e67e4e938cc4336df2b2e64b979",
+        "text": "Mogu li preuzeti izvod s računa?",
+        "language": "sr-ME",
+        "englishText": "Can I download my bank statement?"
+      },
+      {
+        "sentenceUid": "c0d230ddadfecd62adcf74ea899c5bdc",
+        "text": "Kolika je visina kamatne stopa mog kredita?",
+        "language": "sr-ME",
+        "englishText": "What is the interest rate on my loan?"
+      },
+      {
+        "sentenceUid": "f86d9cb76a93e43e9dce5f021b596429",
+        "text": "Koje prednosti za putovanje mogu ostvariti sa svojom kreditnom karticom?",
+        "language": "sr-ME",
+        "englishText": "What travel benefits come with my credit card?"
+      },
+      {
+        "sentenceUid": "8984d2c8bbe60e0e377ea4f28514fba5",
+        "text": "Kako da promijenim adresu e-pošte koju koristim za oporavak mojeg naloga?",
+        "language": "sr-ME",
+        "englishText": "How do I change my email used for account recovery?"
+      },
+      {
+        "sentenceUid": "36faa8ca008800aaf479b9fec1fd6eda",
+        "text": "Mogu li otvoriti novi štedni račun?",
+        "language": "sr-ME",
+        "englishText": "Can I open a new savings account?"
+      },
+      {
+        "sentenceUid": "21db5c70ddfd5bee3b4c64c8173d3ae0",
+        "text": "Pokažite mi mojih posljednjih deset transakcija.",
+        "language": "sr-ME",
+        "englishText": "Show me my last ten transactions."
+      },
+      {
+        "sentenceUid": "bbd19a366052fd94b38617b5e86005a0",
+        "text": "Kako da podesim bezbjednosne alrame obaveštenja?",
+        "language": "sr-ME",
+        "englishText": "How can I set up security alerts?"
+      },
+      {
+        "sentenceUid": "bb01303d729218a9b59449216fbd168d",
+        "text": "Kako da uključim obavještenja za transakcije na mobilnom telefonu",
+        "language": "sr-ME",
+        "englishText": "How do I enable mobile alerts for transactions?"
+      },
+      {
+        "sentenceUid": "eb1e4769038265988274601473f72314",
+        "text": "Koji je najbolji štedni plan za mene?",
+        "language": "sr-ME",
+        "englishText": "What is the best savings plan for me?"
+      },
+      {
+        "sentenceUid": "13bade9449bb3d9d3a076bc9cecee633",
+        "text": "Kako da zatražim privremeno povećanje limita na kartici?",
+        "language": "sr-ME",
+        "englishText": "Can I request a temporary increase in my credit limit?"
+      },
+      {
+        "sentenceUid": "e81ca3bf8b558ef3ef9175543f154d42",
+        "text": "Kolika je kamatna stopa na računu tržišta novca?",
+        "language": "sr-ME",
+        "englishText": "What is the interest rate on a money market account?"
+      },
+      {
+        "sentenceUid": "76f244383837ff8d4b61b9cd6d9cc156",
+        "text": "Pokažite mi nedavne kartične transakcije.",
+        "language": "sr-ME",
+        "englishText": "Show me my recent card transactions."
+      },
+      {
+        "sentenceUid": "ab922ae2dbb1fcaedc47b8be8c9737cc",
+        "text": "Koliki su moji prihodi od ulaganja?",
+        "language": "sr-ME",
+        "englishText": "What are my investment returns?"
+      },
+      {
+        "sentenceUid": "4bba251eb94e382ab561554ff5c74edc",
+        "text": "Mogu li promjeniti rok otplate mog kredita?",
+        "language": "sr-ME",
+        "englishText": "Can I change my loan term?"
+      },
+      {
+        "sentenceUid": "1b47e272516d0cf7c48eb2f2fb780347",
+        "text": "Šta da uradim ako posumnjam na prevaru?",
+        "language": "sr-ME",
+        "englishText": "What should I do if I suspect fraud?"
+      },
+      {
+        "sentenceUid": "51539e6662f94f0d26265f0c2ace920a",
+        "text": "Mogu li dobiti kredit za konsolidaciju svojih dugova?",
+        "language": "sr-ME",
+        "englishText": "Can I get a loan to consolidate my debts?"
+      },
+      {
+        "sentenceUid": "126afc367cacf22dfe838c33187f71a1",
+        "text": "Da li mogu da razgovaram sa savjetnikom?",
+        "language": "sr-ME",
+        "englishText": "Can I chat with an advisor?"
+      },
+      {
+        "sentenceUid": "131a3c5838bae761a116a67b8aa154c2",
+        "text": "Koji je status mog zahtjeva?",
+        "language": "sr-ME",
+        "englishText": "What is the status of my inquiry?"
+      },
+      {
+        "sentenceUid": "ffecfab904b00e0b1d93691165a4e5d8",
+        "text": "Kako mogu da izvšim plaćanje u realnom vremenu (instant plaćanje)",
+        "language": "sr-ME",
+        "englishText": "How do I make a real-time payment?"
+      },
+      {
+        "sentenceUid": "d57bed46072125059ce21ddb3820c081",
+        "text": "Koji je bio ukupan iznos naknada koje sam platio/la u posljednjem tromesečju 2022.?",
+        "language": "sr-ME",
+        "englishText": "What was the total amount of fees I paid in the last quarter of 2022?"
+      },
+      {
+        "sentenceUid": "9a785385a0dba8a5703ccb1eb76ded3b",
+        "text": "Kako mogu ostvariti povraćaj novca?",
+        "language": "sr-ME",
+        "englishText": "What cashback offers do I have?"
+      },
+      {
+        "sentenceUid": "d92078630e026f891b5971361319cfa6",
+        "text": "Kako mogu da refinansiram kredit?",
+        "language": "sr-ME",
+        "englishText": "How can I refinance my loan?"
+      },
+      {
+        "sentenceUid": "e1b8a5579096a477055b3e72759c8bb1",
+        "text": "Koji je kurs evra u odnosu na dolar od 1. oktobra",
+        "language": "sr-ME",
+        "englishText": "What is the current exchange rate from USD to EUR as of October 1, 2023?"
+      },
+      {
+        "sentenceUid": "7443b9dd97d610bdc0f75a6d33691bec",
+        "text": "Koliki je iznos slijedeće rate kredita?",
+        "language": "sr-ME",
+        "englishText": "How much is my next loan installment?"
+      },
+      {
+        "sentenceUid": "470d1a977a2faa73c9bd2cbceab855e9",
+        "text": "Koje je stanje na mojem računu?",
+        "language": "sr-ME",
+        "englishText": "What is my account balance?"
+      },
+      {
+        "sentenceUid": "3930aa2f14ec945666d30bb45bef55f3",
+        "text": "Kako da osporim transakciju sa svoje kreditne kartice?",
+        "language": "sr-ME",
+        "englishText": "Can I dispute a charge on my credit card?"
+      },
+      {
+        "sentenceUid": "059936fd0ebe4d5da4a660aae65ab30b",
+        "text": "Mogu li dobiti izvod iz kreditnog biroa?",
+        "language": "sr-ME",
+        "englishText": "Can I get a copy of my credit report?"
+      },
+      {
+        "sentenceUid": "fa2bbbe230fee33b00169ed1c5abcd94",
+        "text": "Kako mogu da naručim novu čekovnu knjižicu?",
+        "language": "sr-ME",
+        "englishText": "Can I order a new checkbook?"
+      },
+      {
+        "sentenceUid": "33302a0bac090db1c309f53c45acd20f",
+        "text": "Kako da zakažem sastanak sa finansijskim savjetnikom?",
+        "language": "sr-ME",
+        "englishText": "Can I schedule a meeting with a financial advisor?"
+      },
+      {
+        "sentenceUid": "ab7fa78012badee62740ea609eaa03df",
+        "text": "Koji je minimalni iznos za ulaganje?",
+        "language": "sr-ME",
+        "englishText": "What is the minimum amount to invest?"
+      },
+      {
+        "sentenceUid": "04dee4a2d2ac476cf1a5fb0e3908734c",
+        "text": "Blokirajte moju kreditnu karticu",
+        "language": "sr-ME",
+        "englishText": "Block my credit card."
+      },
+      {
+        "sentenceUid": "6b1daf55d82db786ae326340f7b9178b",
+        "text": "Kako da prijavim problem sa uslugom?",
+        "language": "sr-ME",
+        "englishText": "How do I report a service issue?"
+      },
+      {
+        "sentenceUid": "d8f18fa91dece2f70091e2e645b5f13f",
+        "text": "Mogu li podnijeti online zahtjev za lični kredit?",
+        "language": "sr-ME",
+        "englishText": "Can I apply for a personal loan online?"
+      },
+      {
+        "sentenceUid": "a8ff450064a4bb29a3d0b59159a93a3f",
+        "text": "Koje su naknade provizije za transakcije u inostranstvo?",
+        "language": "sr-ME",
+        "englishText": "What are the fees for foreign transactions?"
+      },
+      {
+        "sentenceUid": "b1cebfe46095a6acf546736fef5271d4",
+        "text": "Podesite stalni nalog za moju kiriju.",
+        "language": "sr-ME",
+        "englishText": "Set up a standing order for my rent."
+      },
+      {
+        "sentenceUid": "3068ebf5ed2902c8890a0f504fd85b9e",
+        "text": "Da li mogu da promijenim nazive svojih računa?",
+        "language": "sr-ME",
+        "englishText": "Can I rename my accounts?"
+      },
+      {
+        "sentenceUid": "d3a0b7864faf48307845828e5268dfe7",
+        "text": "Da li mogu ranije da podignem novac sa svojeg oročenog depozita?",
+        "language": "sr-ME",
+        "englishText": "Can I withdraw from my fixed deposit early?"
+      },
+      {
+        "sentenceUid": "9ea6045e634ed9629a8ab10ac15c145b",
+        "text": "Možete li da mi pošaljete izvode sa računa od juna 2022. do septembra 2022. na moju email adresu?",
+        "language": "sr-ME",
+        "englishText": "Can you send me my bank statements from June 2022 to September 2022 to my email address?"
+      },
+      {
+        "sentenceUid": "804c58e2d03a90864c50ee3baf130773",
+        "text": "Kako da kreiram virtuelnu karticu?",
+        "language": "sr-ME",
+        "englishText": "Can I generate a virtual card?"
+      },
+      {
+        "sentenceUid": "cd6f7da6eab01593bd621ca4ff57733f",
+        "text": "Kako da obustavim trajni nalog za plaćanje",
+        "language": "sr-ME",
+        "englishText": "How do I stop a recurring payment?"
+      },
+      {
+        "sentenceUid": "c7f75705769cc234dd1644bb101492b1",
+        "text": "Koje je raspoloživo stanje na mojem računu?",
+        "language": "sr-ME",
+        "englishText": "What is my available balance?"
+      },
+      {
+        "sentenceUid": "80594c105cabe1b98ffa1374a0dfad07",
+        "text": "Molim vas da kreirate stalni nalog od 1000€ na moj račun na adresi Ulica Oslobođenja 55 svakog prvog (dana) u mjesecu.",
+        "language": "sr-ME",
+        "englishText": "Please set up a recurring transfer of 1000$ to my account at MusterPlatz 1, Drtmund, on the first of every month."
+      },
+      {
+        "sentenceUid": "9cf70e89ce73227d1bbaa6e10fdce6c7",
+        "text": "Kako promijeniti nadimak mog računa?",
+        "language": "sr-ME",
+        "englishText": "How do I change my account's nickname?"
+      },
+      {
+        "sentenceUid": "353f632627fbdfeb8938db532030dd95",
+        "text": "Kako da povećam limit na svojoj kartici?",
+        "language": "sr-ME",
+        "englishText": "Can I increase my card limit?"
+      },
+      {
+        "sentenceUid": "55e8b88fdd4312fae0b7ccfa64263bfd",
+        "text": "Koji su uređaji povezani sa mojim računom?",
+        "language": "sr-ME",
+        "englishText": "What devices are linked to my account?"
+      },
+      {
+        "sentenceUid": "9cd7f9c92e809ac2071b8cd7e3f3dc1b",
+        "text": "Da li mogu da pristupim izvodu svojeg računa za prošlu godinu?",
+        "language": "sr-ME",
+        "englishText": "Can I access my account statements from last year?"
+      },
+      {
+        "sentenceUid": "45b2ce598b0af8e8ab693dd82243661e",
+        "text": "Kako mogu da podnesem zahtjev za novu karticu?",
+        "language": "sr-ME",
+        "englishText": "How can I request a new card?"
+      },
+      {
+        "sentenceUid": "4d70241bdb05871c45d4eb87364dfd8f",
+        "text": "Kako da podnesem zahtjev za hipoteku?",
+        "language": "sr-ME",
+        "englishText": "How do I apply for a mortgage?"
+      },
+      {
+        "sentenceUid": "29fae6cb3bf7cae28af71c579e9c2b07",
+        "text": "Da li možete da izlistate sve moje račune?",
+        "language": "sr-ME",
+        "englishText": "Can you list all my accounts?"
+      },
+      {
+        "sentenceUid": "4ba04c3f5b384ec0268ab55a21c3d6af",
+        "text": "Kako da pogledam depozite na čekanju?",
+        "language": "sr-ME",
+        "englishText": "Can I view pending deposits?"
+      },
+      {
+        "sentenceUid": "99488849412d71a376c5d2513722f0b0",
+        "text": "Kako da postavim limit potrošnje na svom računu?",
+        "language": "sr-ME",
+        "englishText": "How do I set a spending limit on my account?"
+      },
+      {
+        "sentenceUid": "0a891c25937afb37e6d91a400b055eb5",
+        "text": "Kako mogu da izmjenim primarnu adresu moje e-pošte za račun?",
+        "language": "sr-ME",
+        "englishText": "How do I change my account's primary email address?"
+      },
+      {
+        "sentenceUid": "75526cffc56ad8b71ad79524350579c6",
+        "text": "Koliko je trenutno stanje duga mog kredita?",
+        "language": "sr-ME",
+        "englishText": "What is my current loan balance?"
+      },
+      {
+        "sentenceUid": "80901021f9095df0854c39b4f37f2acd",
+        "text": "Molim vas da zakažete plaćanje računa od 25000RSD mom stanodavcu na adresi Knez Mihailova 123, Beograd, 5. novembra 2023.",
+        "language": "sr-ME",
+        "englishText": "Please schedule a bill payment of £200 to my landlord at Hauptstr. 123, Berlin, on November 5, 2023."
+      },
+      {
+        "sentenceUid": "d1c7c16dda47fd533d3c7ef62fe6a97e",
+        "text": "Koliki kreditni iznos mogu da pozajmim?",
+        "language": "sr-ME",
+        "englishText": "How much can I borrow?"
+      },
+      {
+        "sentenceUid": "cdc9106e2186ca71a7289a9678938ac8",
+        "text": "Možete li mi dati detalje transakcije od 1000€ na adresi Ulica Slobode 45, Nikšić, 12. avgusta 2023.?",
+        "language": "sr-ME",
+        "englishText": "Can you give me the details of the $150 transaction at Linienstr. 106, Essen on August 12, 2023?"
+      },
+      {
+        "sentenceUid": "8388e38e41ea79b24455bc1bdf902f47",
+        "text": "Koliko iznosi kamatna stopa za štedne račune",
+        "language": "sr-ME",
+        "englishText": "What are the interest rates for savings accounts?"
+      },
+      {
+        "sentenceUid": "b1781545934b72882c4b744a58e33c54",
+        "text": "Koje pogodnosti ima moja kartica?",
+        "language": "sr-ME",
+        "englishText": "What are the benefits of my card?"
+      },
+      {
+        "sentenceUid": "70678084aff923ca14b303ca83445c9d",
+        "text": "Koliko imam novca na štednom računu.",
+        "language": "sr-ME",
+        "englishText": "How much do I have in my savings account?"
+      },
+      {
+        "sentenceUid": "190bf9661706286950d2272e3c58d417",
+        "text": "Kako zatvoriti račun kreditne kartice?",
+        "language": "sr-ME",
+        "englishText": "How do I close a credit card account?"
+      },
+      {
+        "sentenceUid": "5081d210d2d50dbaad997c7f6daef50f",
+        "text": "Kako da isključivo pređem na elektronske izvode?",
+        "language": "sr-ME",
+        "englishText": "How do I switch to online-only statements?"
+      },
+      {
+        "sentenceUid": "8dde417528f3107a57a2b832f7930421",
+        "text": "Da li mogu da podesim obavještenja za velike transakcije?",
+        "language": "sr-ME",
+        "englishText": "Can I set notifications for large transactions?"
+      },
+      {
+        "sentenceUid": "a1243f05b1348fd3c49d3c5b8d2b12b5",
+        "text": "Potrebna mi je pomoć sa prenosom novca",
+        "language": "sr-ME",
+        "englishText": "I need help with my transfer."
+      },
+      {
+        "sentenceUid": "8070bf4fe33529eb08dbfaded35d4ca0",
+        "text": "Da li možete da me informišete o vašim najnovijim ponudama?",
+        "language": "sr-ME",
+        "englishText": "Can you provide information on your latest offers?"
+      },
+      {
+        "sentenceUid": "f8732fc885c46ae40f2225e078ce1db6",
+        "text": "Da li možete da mi predložite na koji način da uštedim više novca?",
+        "language": "sr-ME",
+        "englishText": "Can you suggest ways to save more money?"
+      },
+      {
+        "sentenceUid": "18285b572a2c5a775cab90bcd852b61b",
+        "text": "Da li postoje sumnjive aktivnosti na mom računu?",
+        "language": "sr-ME",
+        "englishText": "Are there any suspicious activities on my account?"
+      },
+      {
+        "sentenceUid": "a7c4b45c5e18e69fa80479070c78af5f",
+        "text": "Da li mogu da izvšim vanredno plaćanje rata kredita",
+        "language": "sr-ME",
+        "englishText": "Can I make an extra payment on my loan?"
+      },
+      {
+        "sentenceUid": "01cd260436925e3cf9af2769225eb85b",
+        "text": "Kolika je trenutna stopa za 12-mjesečnu potvrdu o depozitu (CD)?",
+        "language": "sr-ME",
+        "englishText": "What is the current rate for a 12-month CD?"
+      },
+      {
+        "sentenceUid": "08f0e0637f622403dee6d38b3a90a816",
+        "text": "Možete li mi dati bankovne podatke za međunarodni prenos za sljedeći IBAN: ME89370400440532013000?",
+        "language": "sr-ME",
+        "englishText": "Could you provide me with the bank coordinates for an international transfer to the following IBAN: DE89370400440532013000?"
+      },
+      {
+        "sentenceUid": "dcad535dd9e0abd1da82dfe710073ab2",
+        "text": "Da li mogu da ažuriram svoja bezbjednosna pitanja?",
+        "language": "sr-ME",
+        "englishText": "Can I update my security questions?"
+      },
+      {
+        "sentenceUid": "96d524245cd06c91dd1cd8e3794f9bba",
+        "text": "Da li mogu da automatizujem mjesečnu štednju?",
+        "language": "sr-ME",
+        "englishText": "Can I automate monthly savings?"
+      },
+      {
+        "sentenceUid": "c3cd87741f54b618b8c655effbdebd91",
+        "text": "Koji je broj mojeg IBAN računa.",
+        "language": "sr-ME",
+        "englishText": "What is my IBAN?"
+      },
+      {
+        "sentenceUid": "06dbe994fbf595b686b55921c7c442f5",
+        "text": "Kako da deaktiviram uređaj?",
+        "language": "sr-ME",
+        "englishText": "How do I deactivate a device?"
+      },
+      {
+        "sentenceUid": "2cc88657449ffbaa5d54280c9c3a4463",
+        "text": "Koje mogućnosti kreditiranja imam na raspolaganju?",
+        "language": "sr-ME",
+        "englishText": "What loan options do I have?"
+      },
+      {
+        "sentenceUid": "0a7dab49b080265e4153832fd2037063",
+        "text": "Kako da ažuriram svoje lične kontakt podatke?",
+        "language": "sr-ME",
+        "englishText": "How do I update my contact information?"
+      },
+      {
+        "sentenceUid": "04a9a0d567a67c7bd22a8642a4468157",
+        "text": "Da li je na mojoj kartici omogućeno međunarodno plaćanje?",
+        "language": "sr-ME",
+        "englishText": "Is my card enabled for international payments?"
+      },
+      {
+        "sentenceUid": "8be7c6a94ed78a5aefb2af8431f621d3",
+        "text": "Kako da prijavim izgubljenu karticu?",
+        "language": "sr-ME",
+        "englishText": "How do I report a lost card?"
+      },
+      {
+        "sentenceUid": "01fbdbdafc335df835df67ff51653d2c",
+        "text": "Kako mogu kontaktirati korisničku podršku?",
+        "language": "sr-ME",
+        "englishText": "How can I contact customer support?"
+      },
+      {
+        "sentenceUid": "6d2cecb612668037548027f124bfca76",
+        "text": "Koje je radno vrijeme banke?",
+        "language": "sr-ME",
+        "englishText": "What are the bank’s working hours?"
+      },
+      {
+        "sentenceUid": "3d9d8ab4b200d8f18a53b308d67133e2",
+        "text": "Šta će se dogoditi ako ne izvršim plaćanje na vrijeme?",
+        "language": "sr-ME",
+        "englishText": "What happens if I miss a payment?"
+      },
+      {
+        "sentenceUid": "768bc38959189fd51e455a8c03b1fa50",
+        "text": "Kako mogu da podelim račun s prijateljima?",
+        "language": "sr-ME",
+        "englishText": "Can I split a bill with friends?"
+      },
+      {
+        "sentenceUid": "686ad392c33a16a496eda64ec214ea07",
+        "text": "Kada mi je uplaćena poslednja plata?",
+        "language": "sr-ME",
+        "englishText": "When was my last salary credited?"
+      },
+      {
+        "sentenceUid": "34bdc31366dd164ce0158367f4c36d03",
+        "text": "Kako da podnesem žalbu?",
+        "language": "sr-ME",
+        "englishText": "How do I file a complaint?"
+      },
+      {
+        "sentenceUid": "ce4f648f62a16824f14412e0a69de7f4",
+        "text": "Kada će mi biti naplaćena sljedeća rata za Netflix?",
+        "language": "sr-ME",
+        "englishText": "When will my next direct debit for Netflix be deducted?"
+      },
+      {
+        "sentenceUid": "b4be9b977307440ce78a15f157d2aeb9",
+        "text": "Možete li danas prebaciti 500€ s mog tekućeg računa na moj štedni račun?",
+        "language": "sr-ME",
+        "englishText": "Can you transfer €500 from my checking account to my savings account today?"
+      },
+      {
+        "sentenceUid": "6d13ba5779caa57b3770ef1e9d2bceb3",
+        "text": "Kako da promijenim PIN na svojoj kartici?",
+        "language": "sr-ME",
+        "englishText": "Can I change my card PIN?"
+      },
+      {
+        "sentenceUid": "398fcc7bb5fde5328ba3433f03532325",
+        "text": "Da li mogu da vidim pokušaje prijave na moj nalog?",
+        "language": "sr-ME",
+        "englishText": "Can I see login attempts?"
+      },
+      {
+        "sentenceUid": "6bba7568495ada526d75ad49e7d2a68b",
+        "text": "Kako da resetujem lozinku?",
+        "language": "sr-ME",
+        "englishText": "How can I reset my password?"
+      },
+      {
+        "sentenceUid": "5c29c3b1d9a962b8ee4141d967aba326",
+        "text": "Kako mogu uložem novac u ETF-ove?",
+        "language": "sr-ME",
+        "englishText": "How can I invest in ETFs?"
+      },
+      {
+        "sentenceUid": "e3d2f060855e4c395c7a692c0f45bf81",
+        "text": "Koje je stanje računa na dan 15. januara 2023.?",
+        "language": "sr-ME",
+        "englishText": "What was my account balance on January 15, 2023?"
+      },
+      {
+        "sentenceUid": "536a68f2dc4dc48fd65ba313d0cdf440",
+        "text": "Pokažite mi moje nadolazeće naloge za plaćanje",
+        "language": "sr-ME",
+        "englishText": "Show me my upcoming scheduled payments."
+      }
   ];
   
   // Migrate the data
