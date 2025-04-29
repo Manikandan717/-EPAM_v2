@@ -200,9 +200,10 @@ function sendAudio()
     $('#mymodal').find('.modal-body').html('<div class="spinner-border text-secondary spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Sending Audio File...');
    
     // $.post( 'http://localhost:8088/audio_upload', {
-    // $.post( 'https://service.tensoract.com/audio_epam_v2', {
-        $.post( 'https://service.tensoract.com/audio_EPAM', {
-            // $.post('http://54.87.91.147:8088/audio_upload', {
+    $.post( 'https://service.tensoract.com/audio_epam_v2', {
+        // $.post( 'https://service.tensoract.com/audio_EPAM', {
+            // $.post('https://54.87.91.147:8088/audio_epam_v2', {
+                // $.post('https://mani.tensoract.com/audio_epam_v2', {
         // name:name,
         // gender:gender,
         // age:age,
