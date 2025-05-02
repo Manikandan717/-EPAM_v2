@@ -310,6 +310,55 @@
         }
     }
 
+    // function displayText() {
+    //     audioPlayer.pause(); audioPlayer.removeAttribute('src'); audioPlayer.load();
+    //     audioStatusMessage.textContent = "Loading reference audio...";
+    //     audioStatusMessage.style.color = "#777";
+    //     audioPlaybackContainer.classList.remove('hidden');
+    //     evaluationArea.classList.remove('hidden');
+    //     clearRatings();
+    //     if(commentInput) commentInput.value = '';
+
+    //     const newEvalUid = generateEvaluationUid();
+    //     if(evaluationUidDisplay) evaluationUidDisplay.textContent = newEvalUid;
+    //     if(evaluationUidDisplay) evaluationUidDisplay.dataset.currentEvalUid = newEvalUid;
+
+    //     if (currentTexts && currentTexts.length > 0 && currentIndex < currentTexts.length) {
+    //         const currentTextData = currentTexts[currentIndex];
+    //         textDisplayDiv.textContent = currentTextData.text;
+
+    //         textDisplayDiv.dataset.language = currentTextData.language || '';
+    //         textDisplayDiv.dataset.sentenceuid = currentTextData.sentenceUid || '';
+    //         textDisplayDiv.dataset.audios3uri = currentTextData.audioS3Uri || '';
+    //         textDisplayDiv.dataset.audiouid = currentTextData.audioUid || '';
+
+    //         titleDiv.textContent = `Sentence ${currentIndex + 1} of ${currentTexts.length}`;
+    //         console.log(`Displaying text ${currentIndex + 1}/${currentTexts.length}, EvalUID: ${newEvalUid}`);
+
+    //         const audioPath = currentTextData.audioS3Uri;
+    //         if (audioPath && audioPath.trim() !== '') {
+    //             const fullAudioPath = audioPath.trim();
+    //             audioPlayer.src = fullAudioPath;
+    //             audioPlayer.load();
+    //             audioPlayer.onloadedmetadata = () => { audioStatusMessage.textContent = `Reference audio loaded (${Math.round(audioPlayer.duration)}s)`; audioStatusMessage.style.color = "green"; };
+    //             audioPlayer.onerror = () => { audioStatusMessage.textContent = `Error loading reference audio.`; audioStatusMessage.style.color = "red"; };
+    //         } else {
+    //             audioStatusMessage.textContent = "No reference audio available.";
+    //             audioStatusMessage.style.color = "#777";
+    //         }
+
+    //         textDisplayDiv.classList.remove('hidden');
+    //         submitButton.classList.remove('hidden');
+    //         submitButton.disabled = false;
+    //         submitButton.textContent = 'Submit / Next';
+    //         alertDiv.classList.remove('hidden'); // Show the contextual alert
+    //         doneDiv.classList.add('hidden');
+
+    //     } else {
+    //          if (currentIndex >= currentTexts.length && currentTexts.length > 0) { showCompletionMessage(); }
+    //          else { console.error("displayText invalid state."); updateForLanguageSelection(); }
+    //     }
+    // }
     function displayText() {
         audioPlayer.pause(); audioPlayer.removeAttribute('src'); audioPlayer.load();
         audioStatusMessage.textContent = "Loading reference audio...";
