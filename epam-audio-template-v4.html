@@ -1,0 +1,734 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Audio Recorder</title>
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="audio-epam-v2/audiodisplay.js"></script>
+	<script src="audio-epam-v2/recorderjs/recorder.js"></script>
+	<script src="audio-epam-v2/newv4.js"></script>
+	<style>
+	canvas {
+		display: inline-block;
+		background: #cccccc;
+		width: 100%;
+		height: 100px;
+	}
+	#controls {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		height: 20%;
+		width: 100%;
+	}
+	.audio {
+		width: 100%;
+	}
+	.hidden {
+		display: none;
+	}
+
+	#title
+	{
+		font-size: 14px;
+		color: #777;
+	}
+
+	#texttorec
+	{
+		border: 1px solid #cccccc;
+		padding: 20px;
+		font-size: 26px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border-radius: 5px;
+	}
+    #save{
+        float: right
+    }
+    #alert{
+        border-color: #d38e8e;
+        background-color: #fff0f2;
+        line-height: 1.6;
+    }
+	#done
+	{
+		font-size: 30px;
+		line-height: 150px;
+		text-align: center;
+		color: #444;
+	}
+    #timer {
+		font-size: 20px;
+		color: #333;
+		margin-top: 10px;
+		text-align: center;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="mymodal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Modal body text goes here.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<main role="main">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-3 ctrlpanel hhidden-xs vh-100 overflow-auto pe-2 pb-2">
+				Please complete your info:
+				<form>
+                    <div class="form-group">
+						<label for="userId">Speaker Id</label>
+						<input type="text" class="form-control" id="userId" aria-describedby="Enter your speaker id" placeholder="Enter your speaker id">
+					</div>
+					<div class="form-group">
+						<label for="userName">Name</label>
+						<input type="text" class="form-control" id="userName" aria-describedby="Enter your name" placeholder="Enter your name">
+					</div>
+					<div class="form-group">
+						<label for="userGender">Gender</label>
+						<select class="form-control" id="userGender">
+							<option></option>
+							<option>Male</option>
+							<option>Female</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="userAge">Age</label>
+						<input type="number" class="form-control" id="userAge" aria-describedby="Enter your age" placeholder="Enter your age">
+					</div>
+					<!-- <div class="form-group">
+						<label for="userCountry">Country </label>
+						<select class="form-control" id="userCountry" onchange="updateText()">
+							<option>United States</option>
+							<option>United Kingdom</option>
+						</select>
+					</div> -->
+					<div class="form-group">
+						<label for="proficiencyLevel">Proficiency Level</label>
+						<select class="form-control" id="proficiencyLevel">
+							<option disabled selected value="">Select your proficiency level</option>
+							<option value="A1 (Beginner)">A1 (Beginner)</option>
+							<option value="A2 (Elementary)">A2 (Elementary)</option>
+							<option value="B1 (Intermediate)">B1 (Intermediate)</option>
+							<option value="B1 (Intermediate)">B2 (Upper Intermediate)</option>
+							<option value="C1 (Advanced)">C1 (Advanced)</option>
+							<option value="C2 (Proficient)">C2 (Proficient)</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="nativeLanguage">Native Language</label>
+						<input type="text" class="form-control" id="nativeLanguage" placeholder="Enter your native language">
+					</div>
+         <div class="form-group">
+						<label for="userCountry">Country</label>
+						<select class="form-control" id="userCountry" onchange="updateText()">
+							<option value="">Select a country</option>
+      
+      <!-- Bosnian Folder -->
+      <optgroup label="Bosnian">
+        <option value="bs-BA">bs-BA (Bosnian - Bosnia)</option>
+        <option value="bs-ME">bs-ME (Bosnian - Montenegro)</option>
+      </optgroup>
+      
+      <!-- Czech Folder -->
+      <optgroup label="Czech">
+        <option value="cs-CZ">cs-CZ (Czech)</option>
+      </optgroup>
+      
+      <!-- German Folder -->
+      <optgroup label="German">
+        <option value="de-AT">de-AT (German - Austria)</option>
+        <option value="de-DE">de-DE (German - Germany)</option>
+      </optgroup>
+      
+      <!-- English Folder -->
+      <optgroup label="English">
+        <option value="en-UK">en-UK (UK English)</option>
+        <option value="en-US">en-US (US English)</option>
+      </optgroup>
+      
+      <!-- Croatian Folder -->
+      <optgroup label="Croatian">
+        <option value="hr-BA">hr-BA (Croatian - Bosnia)</option>
+        <option value="hr-HR">hr-HR (Croatian)</option>
+      </optgroup>
+      
+      <!-- Hungarian Folder -->
+      <optgroup label="Hungarian">
+        <option value="hu-HU">hu-HU (Hungarian)</option>
+      </optgroup>
+      
+      <!-- Polish Folder -->
+      <optgroup label="Polish">
+        <option value="pl-PL">pl-PL (Polish)</option>
+      </optgroup>
+      
+      <!-- Romanian Folder -->
+      <optgroup label="Romanian">
+        <option value="ro-RO">ro-RO (Romanian)</option>
+      </optgroup>
+      
+      <!-- Russian Folder -->
+      <optgroup label="Russian">
+        <option value="ru-RU">ru-RU (Russian)</option>
+      </optgroup>
+      
+      <!-- Slovak Folder -->
+      <optgroup label="Slovak">
+        <option value="sk-CZ">sk-CZ (Slovak in Czechia)</option>
+        <option value="sk-SK">sk-SK (Slovak - Slovakia)</option>
+      </optgroup>
+      
+      <!-- Slovenian Folder -->
+      <optgroup label="Slovenian">
+        <option value="sl-SI">sl-SI (Slovenian)</option>
+      </optgroup>
+      
+      <!-- Albanian Folder -->
+      <optgroup label="Albanian">
+        <option value="sq-AL">sq-AL (Albanian - Albania)</option>
+        <option value="sq-ME">sq-ME (Albanian - Montenegro)</option>
+        <option value="sq-XK">sq-XK (Albanian - Kosovo)</option>
+      </optgroup>
+      
+      <!-- Serbian Folder -->
+      <optgroup label="Serbian">
+        <option value="sr-BA">sr-BA (Serbian - Bosnia)</option>
+        <option value="sr-ME">sr-ME (Serbian - Montenegro)</option>
+        <option value="sr-RS">sr-RS (Serbian - Serbia)</option>
+        <option value="sr-XK">sr-XK (Serbian - Kosovo)</option>
+      </optgroup>
+      
+      <!-- Ukrainian Folder -->
+      <optgroup label="Ukrainian">
+        <option value="uk-UA">uk-UA (Ukrainian)</option>
+      </optgroup>
+        <!-- surzhyk Folder -->
+      <optgroup label="surzhyk">
+        <option value="surzhyk">surzhyk (mix of Ukrainian and Russian)</option>
+      </optgroup>
+    </select>
+  </div>
+					<!-- <div class="form-group">
+						<label for="userCountry">Country</label>
+						<select class="form-control" id="userCountry" onchange="updateText()">
+							<option value="">Select a country</option>
+							<option value="en-US">en-US</option>
+							<option value="en-UK">en-UK</option>
+							<option value="ru-RU">ru-RU</option>
+							<option value="hr-HR">hr-HR</option>
+							<option value="sk-CZ">sk-CZ</option>
+							<option value="sr-XK">sr-XK</option>
+							<option value="sq-AL">sq-AL</option>
+							<option value="cs-CZ">cs-CZ</option>
+							<option value="sq-XK">sq-XK</option>
+							<option value="hu-HU">hu-HU</option>
+							<option value="uk-UA">uk-UA</option>
+							<option value="sk-SK">sk-SK</option>
+							<option value="hr-BA">hr-BA</option>
+							<option value="de-AT">de-AT</option>
+							<option value="de-DE">de-DE</option>
+							<option value="ro-RO">ro-RO</option>
+							<option value="sr-RS">sr-RS</option>
+							<option value="sr-BA">sr-BA</option>
+							<option value="sl-SI">sl-SI</option>
+							<option value="sq-ME">sq-ME</option>
+							<option value="bs-BA">bs-BA</option>
+							<option value="bs-ME">bs-ME</option>
+							<option value="pl-PL">pl-PL</option>
+              <option value="sr-ME">sr-ME</option>
+              <option value="surzhyk">surzhyk</option>
+						</select>
+					</div> -->
+				</form>
+                <button id="clearAllData" class="btn btn-danger">Reset</button>
+				</div>
+				<div class="col-8 imgdisplay">
+					<div id="title"></div>
+					<div id="subtitle"></div>
+					<div id="texttorec">kindly select country first</div>
+					<div id="done" class="hidden">Thank you!</div>
+					<canvas id="analyser" class="hidden"></canvas>
+					<canvas id="wavedisplay" class="hidden"></canvas>
+					<div id="media"></div>
+                    <div id="timer" class="hidden">00:00</div>
+                    <audio id="audioPlayback" controls class="hidden"></audio>
+					<button id="record" type="button" class="btn btn-primary" onclick="toggleRecording(this);">Start Recording</button>
+					<button id="save" type="button" class="btn btn-info hidden" onclick="sendAudio()">Send Audio</button>
+                    <br>
+                    <br>  
+                    <div class="alert mt-3 p-3 position-relative" role="alert" id="alert">
+                        <div class="d-flex align-items-start">
+                          <div>
+                            <h6 class="fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="red" stroke="red" stroke-width="0.5" class="bi bi-exclamation-triangle me-2 mb-2 " viewBox="0 0 16 16">
+                                    <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                                    <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                                  </svg>
+                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                              </svg>Important
+                            </h6>
+                            <p class="mb-0 px-3" id="alert">
+								<b class="text-danger px-1">Mandatory Notice:</b> Record one sentence/question at a time, ensuring each is its own separate clip.<br>
+                                Pause briefly before and after reading each sentence/question to allow for clean editing.<br>
+                                <b class="text-danger px-1">No Repetition Within a Sentence:</b>
+                                <ul>
+                                    <li>If you make a mistake, stop and re-record the entire sentence/question.</li>
+                                    <li>Do not try to restart the sentence halfway through.Tone and Clarity:</li>
+                                    <li>Speak clearly and confidently, enunciating your words without over-exaggerating.</li>
+                                    <li>Avoid mumbling, whispering, or speaking too loudly.</li>
+                            </ul>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+				
+			</div>
+		</div>
+	</main>
+</body>
+<script>
+
+// var texts = [
+// {id:16, text: "Others have tried to explain the phenomenon physically. "},
+// {id:17, text: "Aristotle thought that the rainbow was caused by reflection of the sun's rays by the rain. "},
+// {id:18, text: "Aristotle thought that the rainbow was caused by reflection of the sun's rays by the rain. "},
+// {id:19, text: "Since then physicists have found that it is not reflection, but refraction by the raindrops which causes the rainbows. "},
+// ];
+var countryTexts = {
+  "bs-BA": [
+    {
+      "id": "18ba2d02df5913fc342d0a425964c33a",
+      "text": "Možete li mi dati detalje transakcije od 150KM na adresi Šefika Dorića. 106, Zenica, 12. avgusta 2023?"
+    },
+    {
+      "id": "83522dca1333a653378c78f5c81853bc",
+      "text": "Možete li mi dati bankovne podatke za međunarodni transfer na sledeći IBAN: BH89370400440532013000?"
+    },
+    {
+      "id": "5e867ff2c32caf73683cf49818f1aa99",
+      "text": "Molim Vas da postavite redoviti prenos of 1000KM na moj račun na adresi Trg Slobode 1, Tuzla, prvog u svakom mjesecu"
+    }
+  ],
+  "bs-ME": [
+    {
+      "id": "5f47349ee1700a3e665d23fa38c0e6d2",
+      "text": "Možete li mi dati detalje transakcije od 150 eura na adresi Podgorica, Bulevar Petra Cetinjskog bb iz avgusta 2023. godine?"
+    },
+    {
+      "id": "c84aaca942636e6570a2d2e801f30fd1",
+      "text": "Možete li mi dati instrukcije za plaćanje za međunarodni transfer na sljedeći IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "35b129d6b134d9b3d492e5136cb51478",
+      "text": "Molim Vas, postavite redovni transfer od 1000 eura na moj račun u Podgorici, Bulevar Petra Cetinjskog bb svakog prvog u svakom mjesecu."
+    }
+  ],
+  "cs-CZ": [
+    {
+      "id": "13055ce44a669b5097fba5f133b1d5aa",
+      "text": "Můžete mi poskytnout podrobnosti o transakci ve výši 150 Kč na adrese Dlouhá 8 602 00 Brno 12. srpna 2023?"
+    },
+    {
+      "id": "e3f622d9a25d34784f3d15c239abcdf9",
+      "text": "Mohli byste mi pro IBAN: DE89370400440532013000 poskytnout souřadnice banky pro mezinárodní převod?"
+    },
+    {
+      "id": "b018a7d7ce2ee4e0a2c7c24a7a5d133c",
+      "text": "Prosím o nastavení opakovaného převodu 1000 Kč na můj účet na adrese Československé armády 1345 500 03 Hradec Králové vždy prvního dne v měsíci."
+    }
+  ],
+  "de-AT": [
+    {
+      "id": "da01f8f019a30078c4cb54f26ce74e37",
+      "text": "Können Sie mir die Details der Transaktion über 150 Euro in der Linienstr. 106, Essen, am 12. August 2023 geben?"
+    },
+    {
+      "id": "324028695f1d5bf60888bdc8a7876c7e",
+      "text": "Können Sie mir die Bankkoordinaten für eine internationale Überweisung an die folgende IBAN: DE89370400440532013000 mitteilen?"
+    },
+    {
+      "id": "48b5887682d3bcbaace1bfb3e7fcf74f",
+      "text": "Bitte richten Sie eine wiederkehrende Überweisung von 1000 Euro auf mein Konto in der MusterPlatz 1, Dortmund, am ersten jeden Monats ein."
+    }
+  ],
+  "de-DE": [
+    {
+      "id": "238f76cb0ca6fb046b3f0c396f14db93",
+      "text": "Können Sie mir die Details der Transaktion über 150 Euro in der Linienstr. 106, Essen, am 12. August 2023 geben?"
+    },
+    {
+      "id": "d87b627432733d419003b65be9147fb7",
+      "text": "Können Sie mir die Bankkoordinaten für eine internationale Überweisung an die folgende IBAN: DE89370400440532013000 mitteilen?"
+    },
+    {
+      "id": "dc5c0d9409071f965f974f68ba359806",
+      "text": "Bitte richten Sie eine wiederkehrende Überweisung von 1000 Euro auf mein Konto in der MusterPlatz 1, Dortmund, am ersten jeden Monats ein."
+    }
+  ],
+  "en-UK": [
+    {
+      "id": "b60644fcbcd0d734a0ac8fc4c806fc30",
+      "text": "Can you give me the details of the £150 transaction at 106 High St, Manchester on 12th August 2023?"
+    },
+    {
+      "id": "d15f2c3288110ca14cd6d355714023a2",
+      "text": "Could you provide me with the bank details for an international transfer to the following IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "f0e7cbe88442a321583ba28470d68b07",
+      "text": "Please set up a recurring transfer of £1000 to my account at 1 Green Lane, London, on the first of every month."
+    }
+  ],
+  "en-US": [
+    {
+      "id": "cc56e58821e9cbbc8cacd5eb0509a3e1",
+      "text": "Can you give me the details of the $150 transaction at Linienstr. 106, Essen on August 12, 2023?"
+    },
+    {
+      "id": "764d1dd543706804fd2249849f6d829c",
+      "text": "Could you provide me with the bank coordinates for an international transfer to the following IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "a78b5f355bddc9c9f806fe023add1c8c",
+      "text": "Please set up a recurring transfer of 1000$ to my account at MusterPlatz 1, Drtmund, on the first of every month."
+    }
+  ],
+  "hr-BA": [
+    {
+      "id": "b528585cf9388c8e7e1512a0d0b2828e",
+      "text": "Možete li mi dati detalje o transakciji od 150KM na adresi Primorska 15, Grude, 12. kolovoza 2023?"
+    },
+    {
+      "id": "578e35a999d27123d8d5bf579ab286c3",
+      "text": "Možete li mi dati bankovne podatke za međunarodni transfer na sljedeći IBAN BH89370400440532013000?"
+    },
+    {
+      "id": "92c513340ba19ebd3beb3beff5f86abf",
+      "text": "Molim Vas da postavite redoviti prijenos od 1000KM na moj račun na adresi Trg Bana Jelačića, Široki Brijeg, prvog u svakom mjesecu."
+    }
+  ],
+  "hr-HR": [
+    {
+      "id": "4fee0a2ef4d619f81ae736448b5ac757",
+      "text": "Možete li mi dati detalje transakcije od 150 EURA na adresi Jelačićeva ulica 8 21000 Split, 12. kolovoza 2023?"
+    },
+    {
+      "id": "5ca46d8da025f39d640eb082731f9422",
+      "text": "Možete li mi dati bankovne podatke za međunarodni prijenos za sljedeći IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "f36e371d79d1666a9ff764df8022af33",
+      "text": "Molim vas da postavite redoviti prijenos od 1000 EURA na moj račun na adresi Trg bana Jelačića 5 51000 Rijeka, svakog prvog (dana) u mjesecu."
+    }
+  ],
+  "hu-HU": [
+    {
+      "id": "23b1ca7fef4363d73e38549196974229",
+      "text": "Meg tudná adni a 150 forintos tranzakció részleteit, amit a Kossuth Lajos tér 5. 6720 Szeged alatt könyveltek 2023. augusztus 12-én?"
+    },
+    {
+      "id": "6db302f85de526817d7673a267293532",
+      "text": "Meg tudná adni a banki koordinátákat a következő IBAN-számra történő nemzetközi átutaláshoz: DE89370400440532013000?"
+    },
+    {
+      "id": "d805ab59d3b4a4297b117a2c1fdc1990",
+      "text": "Kérem, állítson be egy 1000 forintos összegű, minden hónap első napján ismétlődő átutalást a Ady Endre út 23. 3300 Eger számlámra."
+    }
+  ],
+  "pl-PL": [
+    {
+      "id": "02f465cf9b70284643560caabfaac7b5",
+      "text": "Czy możesz podać mi szczegóły transakcji na kwotę 150 zł przy ulicy Elm Street 456 w dniu 12 sierpnia 2023 r.?"
+    },
+    {
+      "id": "54fe09ed8536817c7e753e509150b6b3",
+      "text": "Czy mógłbyś podać mi współrzędne bankowe dla przelewu międzynarodowego na następujący numer IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "643b7969f7d9839d0ed5e8c7e960222e",
+      "text": "Proszę o ustawienie cyklicznego przelewu w wysokości 1000 zł na moje konto przy ulicy Pine Street 789 w Toronto, pierwszego dnia każdego miesiąca."
+    }
+  ],
+  "ro-RO": [
+    {
+      "id": "f03e4ebe6e986f4cfc61cd89c0cf8717",
+      "text": "Poți să-mi dai detaliile tranzacției de 150 RON efectuată pe Calea Mihai Viteazul , nr 4, Carei în 12 august 2023?"
+    },
+    {
+      "id": "632ecd42327a4a9f7423edddd2210739",
+      "text": "Ai putea să îmi furnizezi coordonatele bancare pentru un transfer internațional către următorul IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "78447995d087bd5b3bcb328938415626",
+      "text": "Te rog configurează un transfer recurent de 1000 RON către contul meu din BD. IORGA NICOLAE nr. 57 bl. E4 sc. B ap. 10, IAŞI în prima zi a fiecărei luni."
+    }
+  ],
+  "ru-RU": [
+    {
+      "id": "4d14b4abc79ee2946fdf6b7fdf1ef5bc",
+      "text": "Не могли бы вы предоставить мне детали транзакции на сумму 123 рубля по адресу: улица Миклухо-Маклая, дом 10, корпус 2, 12 августа 2023 года?"
+    },
+    {
+      "id": "cd20700abe31173090be78b9e3692cc1",
+      "text": "Не могли бы вы предоставить мне реквизиты для осуществления международного перевода на следующий IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "6d72056a30eab8d275279b51e18ed3cb",
+      "text": "Пожалуйста, настройте автоматический перевод в размере 1001 рубль на мой счёт на Тверской улице, дом 7. Перевод должен осуществляться каждого первого числа месяца."
+    }
+  ],
+  "sk-CZ": [
+    {
+      "id": "82f19ee2f93cb5b02d3db730630cbf8f",
+      "text": "Môžete mi poskytnúť údaje o transakcii v hodnote 150 EUR na adresu Radničné námestie č. 106, Prešov, dňa 12. augusta 2023?"
+    },
+    {
+      "id": "f03eddad0693d5644bf4f3d482827d41",
+      "text": "Môžete mi poskytnúť platobné detaily pre medzinárodný prevod na nasledujúci IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "4dd747c58c05ec6e50aa0e5da50fa989",
+      "text": "Prosím o nastavenie trvalého príkazu v sume 1000 EUR na môj účet na adrese Janka Kráľa č. 456, Žilina, vždy prvého dňa v mesiaci."
+    }
+  ],
+  "sk-SK": [
+    {
+      "id": "d0b714492f6912ed28397719b2d1715f",
+      "text": "Môžete mi poskytnúť údaje o transakcii v hodnote 150 EUR na adresu Radničné námestie č. 106, Prešov, dňa 12. augusta 2023?"
+    },
+    {
+      "id": "0c7de2d341d4053141683c93276e4787",
+      "text": "Môžete mi poskytnúť platobné detaily pre medzinárodný prevod na nasledujúci IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "1ebd9b4828aa0c433cf02e0f4fb06b85",
+      "text": "Prosím o nastavenie trvalého príkazu v sume 1000 EUR na môj účet na adrese Janka Kráľa č. 456, Žilina, vždy prvého dňa v mesiaci."
+    }
+  ],
+  "sl-SI": [
+    {
+      "id": "2b4b5ad29d934825d4889d406864c99c",
+      "text": "Ali mi lahko posredujete podatke o transakciji v višini 150 Evrov na naslovu Trg svobode 12 2000 Maribor, 12. avgusta 2023?"
+    },
+    {
+      "id": "2adea21ecf6b009c46d90b1bb3975a3a",
+      "text": "Ali mi lahko posredujete bančne podatke za mednarodno nakazilo na naslednji IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "e7a4946ba3485b7b5388c8a8c8bd600c",
+      "text": "Prosim, nastavite ponavljajoče se nakazilo 1000 Evrov na moj račun na naslovu Prešernova cesta 5 3000 Celje, vsakega prvega dne v mesecu."
+    }
+  ],
+  "sq-AL": [
+    {
+      "id": "dd2d58ed427fcbcc4e799548c2c0d669",
+      "text": "Mund të më jepni detajet e transaksionit prej 150 Lek në Rruga Ismail Qemali 12 2001 Durrës më 12 gusht 2023?"
+    },
+    {
+      "id": "eee8e5e1a055da8b38133c945b14076e",
+      "text": "A mund të më jepni koordinatat e bankës për një transferim ndërkombëtar në IBAN-in e mëposhtëm: DE89370400440532013000?"
+    },
+    {
+      "id": "17a38473585f53b797acee2568cb444b",
+      "text": "Ju lutemi vendosni një transfertë të përsëritur prej 1000 Lek në llogarinë time në Sheshi Skënderbej 8 4001 Shkodër, në ditën e parë të çdo muaji."
+    }
+  ],
+  "sq-ME": [
+    {
+      "id": "f5066621d91c4dfdc5a536e52f194d31",
+      "text": "A mundesh me m'i dhonë detajet e transaksionit prej 150 euro te Rruga Skënderbeu 25 85360 Ulqin më 12 gusht 2023?"
+    },
+    {
+      "id": "e0376f34a52c04c558210302342e279e",
+      "text": "A mundesh me m'i dhonë koordinatorët e bankës për një transferë ndërkombëtar në këtë IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "4fd8f52b19c0df3eede5abf1e5895d0f",
+      "text": "Të lutem vendos një transferim të përmuajshëm prej 1000 euro në llogarinë time te Bulevardi Dëshmorët e Kombit 7 20000 Tuzi, në fillim të çdo muaji."
+    }
+  ],
+  "sq-XK": [
+    {
+      "id": "9a6c8f9ea347e9c7b60e3f232fa60b1a",
+      "text": "A mundesh me m'i dhonë detajet e transaksionit prej 150€ te Rruga Xheladin Hana 45 20000 Prizren më 12 gusht 2023?"
+    },
+    {
+      "id": "2c2252ed54ab40c3f3b12b475e914b76",
+      "text": "A mundesh me m'i dhonë koordinatat e bankës për një transferë ndërkombëtar në këtë IBAN: CH89370400440532013000?"
+    },
+    {
+      "id": "65917cc737ff8440a402519e6d60dd1f",
+      "text": "Të lutem vendos një transferim të përmuajshëm prej 1000€ në llogarinë time te Bulevardi Nënë Tereza, Banesa 3/2 30000 Pejë, në fillim të çdo muaji."
+    }
+  ],
+  "sr-BA": [
+    {
+      "id": "40b8a3757ae96301f7875c178d80d496",
+      "text": "Možete li mi dati detalje transakcije od 1000€ na adresi Ulica Slobode 45, Nikšić, 12. avgusta 2023.?"
+    },
+    {
+      "id": "f758ee965afdb3d7774f5e39736d06d7",
+      "text": "Možete li mi dati bankovne podatke za međunarodni prenos za sljedeći IBAN: ME89370400440532013000?"
+    },
+    {
+      "id": "1af16e653840cd4c51d76a203fbddf7a",
+      "text": "Molim vas da kreirate stalni nalog od 1000€ na moj račun na adresi Ulica Oslobođenja 55 svakog prvog (dana) u mjesecu."
+    }
+  ],
+  "sr-ME": [
+    {
+      "id": "cdc9106e2186ca71a7289a9678938ac8",
+      "text": "Možete li mi dati detalje transakcije od 1000€ na adresi Ulica Slobode 45, Nikšić, 12. avgusta 2023.?"
+    },
+    {
+      "id": "08f0e0637f622403dee6d38b3a90a816",
+      "text": "Možete li mi dati bankovne podatke za međunarodni prenos za sljedeći IBAN: ME89370400440532013000?"
+    },
+    {
+      "id": "80594c105cabe1b98ffa1374a0dfad07",
+      "text": "Molim vas da kreirate stalni nalog od 1000€ na moj račun na adresi Ulica Oslobođenja 55 svakog prvog (dana) u mjesecu."
+    }
+  ],
+  "sr-RS": [
+    {
+      "id": "5c582e6a83dec4e267f36a3889f290ca",
+      "text": "Možete li mi dati detalje transakcije od 11500RSD na adresi Glavna 106, Niš, 12. avgusta 2023.?"
+    },
+    {
+      "id": "016856bb1dfcfd260c05561d845a8d39",
+      "text": "Možete li mi dati bankovne podatke za međunarodni prijenos za sljedeći IBAN: RS89370400440532013000?"
+    },
+    {
+      "id": "0cc25aceadf8d84b42cf3f92b29dcceb",
+      "text": "Molim vas da kreirate stalni nalog od 1000000RSD na moj račun na adresi Ulica oslobođenja 55 svakog prvog (dana) u mesecu."
+    }
+  ],
+  "sr-XK": [
+    {
+      "id": "fc696120324b9da02750c1c7e43b2e29",
+      "text": "Možete li mi dati detalje transakcije od 1000€ na adresi Ulica Slobode 45, Nikšić, 12. avgusta 2023.?"
+    },
+    {
+      "id": "dc64e23bc38a8ae3488ff43c8db48ffb",
+      "text": "Možete li mi dati bankovne podatke za međunarodni prenos za sljedeći IBAN: ME89370400440532013000?"
+    },
+    {
+      "id": "85901831d70b39864ade291e5c63d641",
+      "text": "Molim vas da kreirate stalni nalog od 1000€ na moj račun na adresi Ulica Oslobođenja 55 svakog prvog (dana) u mjesecu."
+    }
+  ],
+  "uk-UA": [
+    {
+      "id": "42b51619f6f4d1bbdf81a525e29e37b8",
+      "text": "Чи можете ви надати мені деталі транзакції на суму 150 гривень, яка відбулася за адресою Київ, вулиця Шевченка, 10, 12 серпня 2023 року?"
+    },
+    {
+      "id": "308e8115d6eae0ec29d403b9c2f704d1",
+      "text": "Чи могли б ви надати мені банківські реквізити для міжнародного переказу на наступний IBAN: DE89370400440532013000?"
+    },
+    {
+      "id": "d3a2f70ecbfbd6ad0c2e48efbdfc430c",
+      "text": "Будь ласка, налаштуйте регулярний переказ 1000 гривень на мій рахунок за адресою Київ, вулиця Шевченка, 10. Оплата повинна здійснюватись першого числа кожного місяця."
+    }
+  ],
+   "surzhyk": [
+    {
+      "id": "sz_001",
+      "text": "Який баланс мого рахунку?"
+    },
+    {
+      "id": "sz_002",
+      "text": "Чи можу я завантажити свою банківську виписку?"
+    },
+    {
+      "id": "sz_003",
+      "text": "Що таке мій iban?"
+   
+      }
+  ]
+}
+
+
+// console.log(countryTexts.length);
+var idLength = countryTexts;
+// console.log(",,,,,,,,,,,,,,,,,,,,,",idLength);
+// Loop texts array three times
+// console.log("...............",texts);
+countryTexts = countryTexts;
+// console.log("...............",texts);
+nextAudio();
+var currentIndex = 0; // Track which text is being displayed
+
+        function updateText() {
+            var selectedCountry = document.getElementById("userCountry").value;
+            var displayDiv = document.getElementById("texttorec");
+            displayDiv.innerHTML = ""; // Clear previous text
+            currentIndex = 0; // Reset index when country changes
+
+            if (selectedCountry && countryTexts[selectedCountry].length > 0) {
+                displayText(selectedCountry);
+            }
+        }
+
+        function displayText(country) {
+            var displayDiv = document.getElementById("texttorec");
+            displayDiv.innerHTML = ""; // Clear previous text
+
+            if (currentIndex < countryTexts[country].length) {
+                var p = document.createElement("p");
+                p.textContent = countryTexts[country][currentIndex].text;
+                displayDiv.appendChild(p);
+            }
+        }
+
+function nextAudio() {
+    var selectedCountry = document.getElementById("userCountry").value;
+    var displayDiv = document.getElementById("texttorec");
+
+    if (selectedCountry && currentIndex < countryTexts[selectedCountry].length - 1) {
+        currentIndex++;
+        displayText(selectedCountry);
+    } else if (selectedCountry && currentIndex === countryTexts[selectedCountry].length - 1) {
+        // If we've reached the last text, hide #texttorec and #record
+        $('#texttorec').hide();
+        $('#record').hide();
+		$('#alert').hide();
+
+        // Optionally, show a message like "Thank you!" or something similar
+        var doneDiv = document.getElementById("done");
+        doneDiv.classList.remove("hidden"); // Make it visible
+    }
+}
+
+</script>
+</html>
